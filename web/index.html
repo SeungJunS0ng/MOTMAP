@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOTMAP - 맛집 지도</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_KAKAO_API_KEY&libraries=services"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MOTMAP</h1>
+            <p>나만의 맛집 지도</p>
+        </header>
+
+        <div class="main-content">
+            <div class="map-section">
+                <div id="map"></div>
+            </div>
+
+            <div class="sidebar">
+                <div class="search-section">
+                    <input type="text" id="searchInput" placeholder="맛집을 검색해보세요...">
+                    <button id="searchBtn">검색</button>
+                </div>
+
+                <div class="restaurant-list">
+                    <h3>저장된 맛집</h3>
+                    <div id="restaurantList"></div>
+                </div>
+
+                <div class="add-restaurant-form" style="display: none;">
+                    <h3>맛집 추가</h3>
+                    <form id="addRestaurantForm">
+                        <input type="text" id="restaurantName" placeholder="맛집 이름" required>
+                        <input type="text" id="restaurantAddress" placeholder="주소" required>
+                        <select id="restaurantCategory">
+                            <option value="korean">한식</option>
+                            <option value="chinese">중식</option>
+                            <option value="japanese">일식</option>
+                            <option value="western">양식</option>
+                            <option value="cafe">카페</option>
+                            <option value="etc">기타</option>
+                        </select>
+                        <div class="rating">
+                            <label>평점: </label>
+                            <div class="star-rating">
+                                <span class="star" data-rating="1">★</span>
+                                <span class="star" data-rating="2">★</span>
+                                <span class="star" data-rating="3">★</span>
+                                <span class="star" data-rating="4">★</span>
+                                <span class="star" data-rating="5">★</span>
+                            </div>
+                        </div>
+                        <textarea id="restaurantReview" placeholder="리뷰를 작성해주세요..." rows="4"></textarea>
+                        <div class="form-buttons">
+                            <button type="submit">저장</button>
+                            <button type="button" id="cancelBtn">취소</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/map.js"></script>
+    <script src="js/restaurant.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
