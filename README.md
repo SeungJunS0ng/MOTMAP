@@ -286,7 +286,6 @@ CREATE INDEX idx_restaurant_created_at ON restaurants(created_at);
 ## 프로젝트 리뷰
 
 - ✅ **Production Ready**: 실제 운영 환경에 배포 가능한 수준
-- ✅ **Clean Architecture**: SOLID 원칙 적용된 설계
 - ✅ **Modern Tech Stack**: 최신 Java 17 + Spring Boot 3.2
 - ✅ **완전한 테스트**: Swagger UI로 모든 API 테스트 가능
 - ✅ **확장 가능**: 새로운 기능 추가가 용이한 구조
