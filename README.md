@@ -47,7 +47,7 @@ cd MOTMAP
 ### 2. 카카오맵 API 키 설정
 1. [Kakao Developers](https://developers.kakao.com/)에서 애플리케이션 등록
 2. **Web 플랫폼 등록**: `http://localhost:8080` 추가
-3. **JavaScript 키** 발급 및 적용 (이미 적용됨: `3ecea445ce0565e4d9cc34bb5cd216b2`)
+3. **JavaScript 키** 발급 및 적용
 
 ### 3. 애플리케이션 실행
 
@@ -213,7 +213,7 @@ CREATE INDEX idx_restaurant_created_at ON restaurants(created_at);
 
 ## 🎮 주요 사용 시나리오
 
-### 시나리오 1: 새 맛집 발견 및 등록
+### 1: 새 맛집 발견 및 등록
 ```
 1. 지도에서 새로운 맛집 위치 클릭
 2. 자동으로 주소가 채워진 등록 폼 확인
@@ -221,7 +221,7 @@ CREATE INDEX idx_restaurant_created_at ON restaurants(created_at);
 4. 저장하면 지도에 마커와 목록에 추가됨
 ```
 
-### 시나리오 2: 맛집 탐색 및 검색
+### 2: 맛집 탐색 및 검색
 ```
 1. 검색창에 "명동" 입력하여 지역별 검색
 2. 카테고리를 "한식"으로 필터링
@@ -229,7 +229,7 @@ CREATE INDEX idx_restaurant_created_at ON restaurants(created_at);
 4. 맛집 클릭하여 지도에서 위치 확인
 ```
 
-### 시나리오 3: API 개발 및 테스트
+### 3: API 개발 및 테스트
 ```
 1. http://localhost:8080/swagger-ui.html 접속
 2. "맛집 관리" API 그룹에서 원하는 엔드포인트 선택
@@ -249,7 +249,7 @@ CREATE INDEX idx_restaurant_created_at ON restaurants(created_at);
 - **위치 검증**: 위도/경도 유효성 자동 확인
 - **근거리 검색**: 정확한 거리 계산 기반 근처 맛집 찾기
 
-### 🛡️ 견고한 예외 처리
+### 예외 처리
 - **BusinessException**: 계층적 예외 구조
 - **ErrorCode**: 표준화된 에러 코드 체계
 - **ErrorResponse**: JSON 형태의 구조화된 에러 응답
@@ -273,7 +273,7 @@ CREATE INDEX idx_restaurant_created_at ON restaurants(created_at);
 - **위치 기반 검색**: 반경 설정 가능한 근거리 맛집 찾기
 - **다양한 정렬**: 평점순, 최신순, 카테고리별
 
-## 🔮 향후 개선 계획
+## 향후 개선 계획
 
 - [ ] **사용자 인증**: Spring Security 도입
 - [ ] **이미지 업로드**: 맛집 사진 첨부 기능
@@ -283,27 +283,7 @@ CREATE INDEX idx_restaurant_created_at ON restaurants(created_at);
 - [ ] **캐시 시스템**: Redis 캐시 도입
 - [ ] **모바일 앱**: React Native/Flutter 연동
 
-## 🤝 기여하기
-
-```bash
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-```
-
-## 📄 라이선스
-
-이 프로젝트는 **MIT 라이선스** 하에 있습니다. 자유롭게 사용, 수정, 배포할 수 있습니다.
-
-## 📞 문의 및 지원
-
-- **이슈 리포트**: [GitHub Issues](https://github.com/yourusername/motmap/issues)
-- **기능 요청**: [GitHub Discussions](https://github.com/yourusername/motmap/discussions)
-- **이메일**: contact@motmap.com
-
-## 🏆 프로젝트 하이라이트
+## 프로젝트 리뷰
 
 - ✅ **Production Ready**: 실제 운영 환경에 배포 가능한 수준
 - ✅ **Clean Architecture**: SOLID 원칙 적용된 설계
