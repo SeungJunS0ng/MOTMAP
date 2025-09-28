@@ -5,6 +5,7 @@ import com.motmap.dto.RestaurantResponseDto;
 import com.motmap.entity.Category;
 import com.motmap.entity.Restaurant;
 import com.motmap.exception.RestaurantNotFoundException;
+import com.motmap.exception.DuplicateRestaurantException;
 import com.motmap.repository.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,11 @@ public class RestaurantService {
 
     // 맛집 추가
     public RestaurantResponseDto addRestaurant(RestaurantRequestDto requestDto) {
+        // 중복 검사
+        if (restaurantRepository.existsByNameAndAddress(requestDto.getName(), requestDto.getAddress())) {
+            throw new DuplicateRestaurantException(requestDto.getName(), requestDto.getAddress());
+        }
+
         Restaurant restaurant = new Restaurant(
                 requestDto.getName(),
                 requestDto.getAddress(),

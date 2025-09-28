@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOTMAP - 맛집 지도</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3ecea445ce0565e4d9cc34bb5cd216b2&libraries=services"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MOTMAP</h1>
+            <p>나만의 맛집 지도</p>
+        </header>
+
+        <div class="main-content">
+            <div class="map-section">
+                <div id="map"></div>
+            </div>
+
+            <div class="sidebar">
+                <div class="search-section">
+                    <input type="text" id="searchInput" placeholder="맛집을 검색해보세요...">
+                    <button id="searchBtn">검색</button>
+                </div>
+
+                <div class="filter-section">
+                    <select id="categoryFilter">
+                        <option value="">전체 카테고리</option>
+                        <option value="KOREAN">한식</option>
+                        <option value="CHINESE">중식</option>
+                        <option value="JAPANESE">일식</option>
+                        <option value="WESTERN">양식</option>
+                        <option value="CAFE">카페</option>
+                        <option value="ETC">기타</option>
+                    </select>
+                    <select id="sortOrder">
+                        <option value="date">최신순</option>
+                        <option value="rating">평점순</option>
+                    </select>
+                </div>
+
+                <div class="restaurant-list">
+                    <h3>저장된 맛집</h3>
+                    <div id="restaurantList"></div>
+                </div>
+
+                <div class="add-restaurant-form" style="display: none;">
+                    <h3>맛집 추가</h3>
+                    <form id="addRestaurantForm">
+                        <input type="text" id="restaurantName" placeholder="맛집 이름" required>
+                        <input type="text" id="restaurantAddress" placeholder="주소" required>
+                        <select id="restaurantCategory" required>
+                            <option value="">카테고리 선택</option>
+                            <option value="KOREAN">한식</option>
+                            <option value="CHINESE">중식</option>
+                            <option value="JAPANESE">일식</option>
+                            <option value="WESTERN">양식</option>
+                            <option value="CAFE">카페</option>
+                            <option value="ETC">기타</option>
+                        </select>
+                        <div class="rating">
+                            <label>평점: </label>
+                            <div class="star-rating">
+                                <span class="star" data-rating="1">★</span>
+                                <span class="star" data-rating="2">★</span>
+                                <span class="star" data-rating="3">★</span>
+                                <span class="star" data-rating="4">★</span>
+                                <span class="star" data-rating="5">★</span>
+                            </div>
+                        </div>
+                        <textarea id="restaurantReview" placeholder="리뷰를 작성해주세요..." rows="4"></textarea>
+                        <div class="form-buttons">
+                            <button type="submit">저장</button>
+                            <button type="button" id="cancelBtn">취소</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/api.js}"></script>
+    <script th:src="@{/js/map.js}"></script>
+    <script th:src="@{/js/restaurant.js}"></script>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

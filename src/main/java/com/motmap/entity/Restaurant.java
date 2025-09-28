@@ -5,7 +5,12 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "restaurants")
+@Table(name = "restaurants", indexes = {
+    @Index(name = "idx_restaurant_category", columnList = "category"),
+    @Index(name = "idx_restaurant_rating", columnList = "rating"),
+    @Index(name = "idx_restaurant_location", columnList = "latitude, longitude"),
+    @Index(name = "idx_restaurant_created_at", columnList = "created_at")
+})
 public class Restaurant {
 
     @Id
@@ -35,10 +40,14 @@ public class Restaurant {
 
     @Column(nullable = false)
     @NotNull(message = "위도는 필수입니다")
+    @DecimalMin(value = "-90.0", message = "위도는 -90도 이상이어야 합니다")
+    @DecimalMax(value = "90.0", message = "위도는 90도 이하여야 합니다")
     private Double latitude;
 
     @Column(nullable = false)
     @NotNull(message = "경도는 필수입니다")
+    @DecimalMin(value = "-180.0", message = "경도는 -180도 이상이어야 합니다")
+    @DecimalMax(value = "180.0", message = "경도는 180도 이하여야 합니다")
     private Double longitude;
 
     @Column(name = "created_at", nullable = false)
@@ -60,6 +69,10 @@ public class Restaurant {
         this.review = review;
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    @PrePersist
+    protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
 

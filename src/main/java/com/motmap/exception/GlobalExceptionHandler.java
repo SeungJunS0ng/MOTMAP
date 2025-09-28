@@ -22,6 +22,24 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
+    @ExceptionHandler(InvalidLocationException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidLocation(InvalidLocationException ex) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("error", "INVALID_LOCATION");
+        error.put("message", ex.getMessage());
+        error.put("status", HttpStatus.BAD_REQUEST.value());
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(DuplicateRestaurantException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicateRestaurant(DuplicateRestaurantException ex) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("error", "DUPLICATE_RESTAURANT");
+        error.put("message", ex.getMessage());
+        error.put("status", HttpStatus.CONFLICT.value());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
     @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
     public ResponseEntity<Map<String, Object>> handleValidationErrors(Exception ex) {
         Map<String, Object> error = new HashMap<>();

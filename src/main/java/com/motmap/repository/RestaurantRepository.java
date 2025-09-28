@@ -43,6 +43,9 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     // 최신순 정렬
     List<Restaurant> findAllByOrderByCreatedAtDesc();
 
+    // 이름과 주소로 중복 검사
+    boolean existsByNameAndAddress(String name, String address);
+
     // 위치 기반 검색 (반경 내 검색)
     @Query(value = "SELECT * FROM restaurants WHERE " +
            "(6371 * acos(cos(radians(:lat)) * cos(radians(latitude)) * " +
