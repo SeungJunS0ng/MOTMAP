@@ -51,4 +51,10 @@ logging:
   level:
     com.motmap: debug
     org.springframework.web: debug
-    org.hibernate.SQL: 
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/motmap.log

@@ -92,6 +92,10 @@ MOTMAP/
 
 ## 🔧 API 엔드포인트
 
+### 📚 Swagger UI
+- **Swagger UI**: `http://localhost:8080/swagger-ui.html`
+- **API 문서 (OpenAPI 3)**: `http://localhost:8080/api-docs`
+
 ### 맛집 관리
 - `GET /api/restaurants` - 전체 맛집 조회
 - `GET /api/restaurants/{id}` - 특정 맛집 조회
