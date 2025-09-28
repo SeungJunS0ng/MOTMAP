@@ -54,4 +54,17 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     List<Restaurant> findNearbyRestaurants(@Param("lat") Double latitude,
                                          @Param("lng") Double longitude,
                                          @Param("radius") Double radius);
+
+    // 통계 조회를 위한 쿼리들
+    @Query("SELECT AVG(r.rating) FROM Restaurant r")
+    Double findAverageRating();
+
+    @Query("SELECT COUNT(r) FROM Restaurant r WHERE r.createdAt >= :startDate")
+    Long countRestaurantsCreatedAfter(@Param("startDate") java.time.LocalDateTime startDate);
+
+    @Query("SELECT r.category, COUNT(r) FROM Restaurant r GROUP BY r.category")
+    List<Object[]> findCategoryStatistics();
+
+    @Query("SELECT r.rating, COUNT(r) FROM Restaurant r GROUP BY r.rating ORDER BY r.rating")
+    List<Object[]> findRatingStatistics();
 }

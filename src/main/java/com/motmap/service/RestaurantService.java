@@ -2,20 +2,37 @@ package com.motmap.service;
 
 import com.motmap.dto.RestaurantRequestDto;
 import com.motmap.dto.RestaurantResponseDto;
+import com.motmap.dto.RestaurantPageResponseDto;
+import com.motmap.dto.RestaurantStatsDto;
 import com.motmap.entity.Category;
 import com.motmap.entity.Restaurant;
 import com.motmap.exception.RestaurantNotFoundException;
 import com.motmap.exception.DuplicateRestaurantException;
 import com.motmap.exception.InvalidLocationException;
+import com.motmap.exception.BusinessException;
+import com.motmap.exception.ErrorCode;
 import com.motmap.repository.RestaurantRepository;
 import com.motmap.util.LocationUtils;
+import com.motmap.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.motmap.exception.ErrorCode.INVALID_REQUEST;
+import static com.motmap.exception.ErrorCode.INVALID_RATING;
 
 @Service
 @Transactional
@@ -25,7 +42,8 @@ public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
 
-    // 모든 맛집 조회
+    // 모든 맛집 조회 (캐싱 적용)
+    @Cacheable(value = "restaurants", key = "'all'")
     @Transactional(readOnly = true)
     public List<RestaurantResponseDto> getAllRestaurants() {
         log.debug("전체 맛집 목록 조회 시작");
@@ -46,9 +64,13 @@ public class RestaurantService {
         return RestaurantResponseDto.from(restaurant);
     }
 
-    // 맛집 추가
+    // 맛집 추가 (캐시 무효화)
+    @CacheEvict(value = {"restaurants", "categoryRestaurants", "highRatedRestaurants", "restaurantStats"}, allEntries = true)
     public RestaurantResponseDto addRestaurant(RestaurantRequestDto requestDto) {
         log.debug("맛집 추가 시작 - 이름: {}, 주소: {}", requestDto.getName(), requestDto.getAddress());
+
+        // 추가 입력값 검증
+        validateRestaurantData(requestDto);
 
         // 위치 유효성 검증
         if (!LocationUtils.isValidLocation(requestDto.getLatitude(), requestDto.getLongitude())) {
@@ -67,6 +89,25 @@ public class RestaurantService {
         return RestaurantResponseDto.from(savedRestaurant);
     }
 
+    // 입력값 검증 헬퍼 메소드
+    private void validateRestaurantData(RestaurantRequestDto requestDto) {
+        if (!ValidationUtils.isValidRestaurantName(requestDto.getName())) {
+            throw new BusinessException(INVALID_REQUEST, "올바르지 않은 맛집 이름입니다");
+        }
+
+        if (!ValidationUtils.isValidAddress(requestDto.getAddress())) {
+            throw new BusinessException(INVALID_REQUEST, "올바르지 않은 주소입니다");
+        }
+
+        if (!ValidationUtils.isValidRating(requestDto.getRating())) {
+            throw new BusinessException(INVALID_RATING, "평점은 1-5점 사이여야 합니다");
+        }
+
+        if (!ValidationUtils.isValidReview(requestDto.getReview())) {
+            throw new BusinessException(INVALID_REQUEST, "리뷰가 너무 깁니다");
+        }
+    }
+
     // Restaurant 엔티티 생성 헬퍼 메소드
     private Restaurant createRestaurantEntity(RestaurantRequestDto requestDto) {
         return Restaurant.builder()
@@ -80,7 +121,8 @@ public class RestaurantService {
                 .build();
     }
 
-    // 맛집 수정
+    // 맛집 수정 (캐시 무효화)
+    @CacheEvict(value = {"restaurants", "categoryRestaurants", "highRatedRestaurants", "restaurantStats"}, allEntries = true)
     public RestaurantResponseDto updateRestaurant(Long id, RestaurantRequestDto requestDto) {
         log.debug("맛집 수정 시작 - ID: {}, 이름: {}", id, requestDto.getName());
 
@@ -103,7 +145,8 @@ public class RestaurantService {
         return RestaurantResponseDto.from(updatedRestaurant);
     }
 
-    // 맛집 삭제
+    // 맛집 삭제 (캐시 무효화)
+    @CacheEvict(value = {"restaurants", "categoryRestaurants", "highRatedRestaurants", "restaurantStats"}, allEntries = true)
     public void deleteRestaurant(Long id) {
         log.debug("맛집 삭제 시작 - ID: {}", id);
 
@@ -116,7 +159,8 @@ public class RestaurantService {
         log.info("맛집 삭제 완료 - ID: {}", id);
     }
 
-    // 카테고리별 조회
+    // 카테고리별 조회 (캐싱 적용)
+    @Cacheable(value = "categoryRestaurants", key = "#category")
     @Transactional(readOnly = true)
     public List<RestaurantResponseDto> getRestaurantsByCategory(Category category) {
         log.debug("카테고리별 맛집 조회 - 카테고리: {}", category);
@@ -173,7 +217,8 @@ public class RestaurantService {
                 .toList();
     }
 
-    // 고평점 맛집 조회 (새로운 기능)
+    // 고평점 맛집 조회 (캐싱 적용)
+    @Cacheable(value = "highRatedRestaurants", key = "'highRated'")
     @Transactional(readOnly = true)
     public List<RestaurantResponseDto> getHighRatedRestaurants() {
         log.debug("고평점 맛집 조회 시작 (4점 이상)");
@@ -184,5 +229,83 @@ public class RestaurantService {
 
         log.debug("고평점 맛집 {}개 조회 완료", highRatedRestaurants.size());
         return highRatedRestaurants;
+    }
+
+    // 페이징된 맛집 조회 (새로운 기능)
+    @Transactional(readOnly = true)
+    public RestaurantPageResponseDto getRestaurantsWithPaging(int page, int size, String sortBy, String sortDir) {
+        log.debug("페이징된 맛집 조회 - 페이지: {}, 크기: {}, 정렬: {} {}", page, size, sortBy, sortDir);
+
+        // 정렬 방향 설정
+        Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Sort sort = Sort.by(direction, sortBy);
+
+        // 페이지 요청 생성
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Restaurant> restaurantPage = restaurantRepository.findAll(pageable);
+
+        // DTO 변환
+        List<RestaurantResponseDto> restaurantDtos = restaurantPage.getContent().stream()
+                .map(RestaurantResponseDto::from)
+                .toList();
+
+        RestaurantPageResponseDto response = RestaurantPageResponseDto.builder()
+                .restaurants(restaurantDtos)
+                .pageNumber(restaurantPage.getNumber())
+                .pageSize(restaurantPage.getSize())
+                .totalElements(restaurantPage.getTotalElements())
+                .totalPages(restaurantPage.getTotalPages())
+                .first(restaurantPage.isFirst())
+                .last(restaurantPage.isLast())
+                .build();
+
+        log.debug("페이징 조회 완료 - 총 {}개 중 {}번째 페이지", restaurantPage.getTotalElements(), page + 1);
+        return response;
+    }
+
+    // 맛집 통계 조회 (캐싱 적용)
+    @Cacheable(value = "restaurantStats", key = "'stats'")
+    @Transactional(readOnly = true)
+    public RestaurantStatsDto getRestaurantStatistics() {
+        log.debug("맛집 통계 조회 시작");
+
+        // 기본 통계
+        long totalRestaurants = restaurantRepository.count();
+        Double averageRating = restaurantRepository.findAverageRating();
+        long highRatedCount = restaurantRepository.findByRatingGreaterThanEqual(4).size();
+
+        // 최근 30일 등록 맛집 수
+        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+        Long recentCount = restaurantRepository.countRestaurantsCreatedAfter(thirtyDaysAgo);
+
+        // 카테고리별 통계
+        Map<String, Long> categoryStats = new HashMap<>();
+        List<Object[]> categoryData = restaurantRepository.findCategoryStatistics();
+        for (Object[] row : categoryData) {
+            Category category = (Category) row[0];
+            Long count = (Long) row[1];
+            categoryStats.put(category.getDisplayName(), count);
+        }
+
+        // 평점별 통계
+        Map<Integer, Long> ratingStats = new HashMap<>();
+        List<Object[]> ratingData = restaurantRepository.findRatingStatistics();
+        for (Object[] row : ratingData) {
+            Integer rating = (Integer) row[0];
+            Long count = (Long) row[1];
+            ratingStats.put(rating, count);
+        }
+
+        RestaurantStatsDto stats = RestaurantStatsDto.builder()
+                .totalRestaurants(totalRestaurants)
+                .categoryStats(categoryStats)
+                .ratingStats(ratingStats)
+                .averageRating(averageRating != null ? Math.round(averageRating * 100.0) / 100.0 : 0.0)
+                .highRatedCount(highRatedCount)
+                .recentRestaurantsCount(recentCount != null ? recentCount : 0L)
+                .build();
+
+        log.debug("맛집 통계 조회 완료 - 총 {}개 맛집, 평균 평점 {}", totalRestaurants, averageRating);
+        return stats;
     }
 }

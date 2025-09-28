@@ -29,6 +29,9 @@ class RestaurantUI {
         categoryFilter.addEventListener('change', () => this.handleFilter());
         sortOrder.addEventListener('change', () => this.handleFilter());
 
+        // 고평점 맛집 버튼 이벤트 (새로운 기능)
+        this.addHighRatedButton();
+
         // 맛집 추가 폼
         const addForm = document.getElementById('addRestaurantForm');
         addForm.addEventListener('submit', (e) => this.handleAddRestaurant(e));
@@ -316,6 +319,31 @@ class RestaurantUI {
         setTimeout(() => {
             successDiv.remove();
         }, 3000);
+    }
+
+    // 고평점 맛집 필터 버튼 추가
+    addHighRatedButton() {
+        const container = document.getElementById('highRatedButtonContainer');
+        container.innerHTML = ''; // 기존 버튼 제거
+
+        const button = document.createElement('button');
+        button.textContent = '고평점 맛집 보기';
+        button.className = 'btn-high-rated';
+
+        button.addEventListener('click', async () => {
+            try {
+                this.showLoading();
+                const highRatedRestaurants = await apiService.getRestaurantsByRating(4); // 4점 이상 필터링
+                this.currentRestaurants = highRatedRestaurants;
+                this.renderRestaurantList(highRatedRestaurants);
+                mapManager.updateMarkers(highRatedRestaurants);
+            } catch (error) {
+                this.showError('고평점 맛집 로드 중 오류가 발생했습니다.');
+                console.error('High rated restaurants error:', error);
+            }
+        });
+
+        container.appendChild(button);
     }
 }
 

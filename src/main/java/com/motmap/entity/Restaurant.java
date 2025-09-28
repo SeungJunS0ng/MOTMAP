@@ -25,11 +25,11 @@ public class Restaurant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     @NotBlank(message = "맛집 이름은 필수입니다")
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 200)
     @NotBlank(message = "주소는 필수입니다")
     private String address;
 

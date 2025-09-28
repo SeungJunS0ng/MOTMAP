@@ -2,6 +2,8 @@ package com.motmap.controller;
 
 import com.motmap.dto.RestaurantRequestDto;
 import com.motmap.dto.RestaurantResponseDto;
+import com.motmap.dto.RestaurantPageResponseDto;
+import com.motmap.dto.RestaurantStatsDto;
 import com.motmap.entity.Category;
 import com.motmap.service.RestaurantService;
 import jakarta.validation.Valid;
@@ -122,5 +124,35 @@ public class RestaurantController {
     public ResponseEntity<List<RestaurantResponseDto>> getHighRatedRestaurants() {
         List<RestaurantResponseDto> restaurants = restaurantService.getHighRatedRestaurants();
         return ResponseEntity.ok(restaurants);
+    }
+
+    @Operation(summary = "페이징된 맛집 조회", description = "맛집 목록을 페이징하여 조회합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "조회 성공"),
+        @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @GetMapping("/paged")
+    public ResponseEntity<RestaurantPageResponseDto> getRestaurantsWithPaging(
+            @Parameter(description = "페이지 번호 (0부터 시작)", example = "0")
+            @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "페이지 크기", example = "10")
+            @RequestParam(defaultValue = "10") int size,
+            @Parameter(description = "정렬 기준", example = "createdAt")
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @Parameter(description = "정렬 방향", example = "desc")
+            @RequestParam(defaultValue = "desc") String sortDir) {
+        RestaurantPageResponseDto restaurants = restaurantService.getRestaurantsWithPaging(page, size, sortBy, sortDir);
+        return ResponseEntity.ok(restaurants);
+    }
+
+    @Operation(summary = "맛집 통계 조회", description = "전체 맛집 현황 및 통계 정보를 조회합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "조회 성공"),
+        @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @GetMapping("/statistics")
+    public ResponseEntity<RestaurantStatsDto> getRestaurantStatistics() {
+        RestaurantStatsDto stats = restaurantService.getRestaurantStatistics();
+        return ResponseEntity.ok(stats);
     }
 }
