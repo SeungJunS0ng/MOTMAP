@@ -291,9 +291,3 @@ CREATE INDEX idx_restaurant_created_at ON restaurants(created_at);
 - ✅ **완전한 테스트**: Swagger UI로 모든 API 테스트 가능
 - ✅ **확장 가능**: 새로운 기능 추가가 용이한 구조
 - ✅ **개발자 친화적**: 상세한 문서화와 로깅
-
----
-
-**Made with ❤️ using Spring Boot 3.2 & Kakao Map API**
-
-*더 맛있는 세상을 위한 개발자들의 맛집 지도 서비스*
