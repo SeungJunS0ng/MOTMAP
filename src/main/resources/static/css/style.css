@@ -116,6 +116,28 @@ header p {
     margin-right: 0;
 }
 
+.high-rated-container {
+    margin-top: 10px;
+}
+
+.btn-high-rated {
+    background: linear-gradient(135deg, #ffc107 0%, #ff8f00 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    width: 100%;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-high-rated:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+}
+
 .restaurant-list h3,
 .add-restaurant-form h3 {
     color: #333;

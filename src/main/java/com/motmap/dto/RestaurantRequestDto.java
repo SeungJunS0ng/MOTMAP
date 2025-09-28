@@ -2,8 +2,16 @@ package com.motmap.dto;
 
 import com.motmap.entity.Category;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Schema(description = "맛집 등록/수정 요청 DTO")
 public class RestaurantRequestDto {
 
@@ -39,41 +47,4 @@ public class RestaurantRequestDto {
     @DecimalMin(value = "-180.0", message = "경도는 -180도 이상이어야 합니다")
     @DecimalMax(value = "180.0", message = "경도는 180도 이하여야 합니다")
     private Double longitude;
-
-    // 기본 생성자
-    public RestaurantRequestDto() {}
-
-    // 생성자
-    public RestaurantRequestDto(String name, String address, Category category,
-                               Integer rating, String review, Double latitude, Double longitude) {
-        this.name = name;
-        this.address = address;
-        this.category = category;
-        this.rating = rating;
-        this.review = review;
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
-
-    // Getters and Setters
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getAddress() { return address; }
-    public void setAddress(String address) { this.address = address; }
-
-    public Category getCategory() { return category; }
-    public void setCategory(Category category) { this.category = category; }
-
-    public Integer getRating() { return rating; }
-    public void setRating(Integer rating) { this.rating = rating; }
-
-    public String getReview() { return review; }
-    public void setReview(String review) { this.review = review; }
-
-    public Double getLatitude() { return latitude; }
-    public void setLatitude(Double latitude) { this.latitude = latitude; }
-
-    public Double getLongitude() { return longitude; }
-    public void setLongitude(Double longitude) { this.longitude = longitude; }
 }

@@ -5,7 +5,7 @@ import com.motmap.dto.RestaurantResponseDto;
 import com.motmap.entity.Category;
 import com.motmap.service.RestaurantService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,14 +21,10 @@ import java.util.List;
 @Tag(name = "맛집 관리", description = "맛집 CRUD 및 검색 API")
 @RestController
 @RequestMapping("/api/restaurants")
+@RequiredArgsConstructor
 public class RestaurantController {
 
     private final RestaurantService restaurantService;
-
-    @Autowired
-    public RestaurantController(RestaurantService restaurantService) {
-        this.restaurantService = restaurantService;
-    }
 
     @Operation(summary = "전체 맛집 조회", description = "등록된 모든 맛집 목록을 조회합니다.")
     @ApiResponses(value = {
@@ -114,6 +110,17 @@ public class RestaurantController {
             @RequestParam Double longitude,
             @RequestParam(required = false) Double radius) {
         List<RestaurantResponseDto> restaurants = restaurantService.getNearbyRestaurants(latitude, longitude, radius);
+        return ResponseEntity.ok(restaurants);
+    }
+
+    @Operation(summary = "고평점 맛집 조회", description = "평점 4점 이상의 고평점 맛집 목록을 조회합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "조회 성공"),
+        @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    @GetMapping("/high-rated")
+    public ResponseEntity<List<RestaurantResponseDto>> getHighRatedRestaurants() {
+        List<RestaurantResponseDto> restaurants = restaurantService.getHighRatedRestaurants();
         return ResponseEntity.ok(restaurants);
     }
 }
