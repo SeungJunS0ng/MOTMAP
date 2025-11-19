@@ -34,7 +34,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.motmap.exception.ErrorCode.INVALID_REQUEST;
 import static com.motmap.exception.ErrorCode.INVALID_RATING;
