@@ -60,18 +60,25 @@ cd MOTMAP
 
 #### ⚡ Gradle 사용
 ```bash
+# 프로젝트에 gradle wrapper가 정상적으로 구성된 경우
 ./gradlew bootRun
+# 만약 Gradle Wrapper 실행 시 'GradleWrapperMain' 관련 오류가 발생하면
+# 로컬에 Gradle을 설치한 뒤 `gradle wrapper`를 실행하여 wrapper 파일을 생성하거나
+# 아래 Maven 방법을 사용하세요.
 ```
 
 #### 📦 Maven 사용
 ```bash
+# Maven이 설치되어 있다면
 mvn spring-boot:run
 ```
 
 ### 4. 웹 브라우저 접속
 - **메인 서비스**: `http://localhost:8080`
-- **API 문서**: `http://localhost:8080/swagger-ui.html`
-- **데이터베이스**: `http://localhost:8080/h2-console`
+- **API 문서 (Swagger UI)**: `http://localhost:8080/swagger-ui/index.html`  
+  (springdoc starter 사용 시 기본 경로는 위와 같습니다)
+- **OpenAPI JSON**: `http://localhost:8080/v3/api-docs`
+- **데이터베이스 (개발용 H2 콘솔, 설정 시 활성화)**: `http://localhost:8080/h2-console`
 
 ## 📁 프로젝트 구조
 
@@ -124,7 +131,7 @@ MOTMAP/
 ## 🔧 API 엔드포인트
 
 ### 📚 완전한 API 문서화
-- **Swagger UI**: `http://localhost:8080/swagger-ui.html`
+- **Swagger UI**: `http://localhost:8080/swagger-ui/index.html`
 - **OpenAPI 3.0 JSON**: `http://localhost:8080/v3/api-docs`
 - **한글 문서화**: 모든 API에 상세한 한글 설명과 예시값 제공
 
@@ -147,6 +154,17 @@ MOTMAP/
 - `GET /api/restaurants/nearby?lat={lat}&lng={lng}&radius={radius}` - 근처 맛집 검색
 
 ## 💾 데이터베이스
+
+현재 기본 설정은 MySQL 로컬 연동입니다. `src/main/resources/application.yml`에서 데이터베이스 정보를 확인하세요.
+
+### MySQL 로컬 설정 예시
+- DB 이름: motmap
+- 호스트: 127.0.0.1
+- 포트: 3306
+- 사용자: admin
+- 비밀번호: 091122john
+
+> 운영 환경에서는 DB 비밀번호와 민감정보는 환경 변수 또는 시크릿 매니저로 관리하세요.
 
 ### 🔧 개발 환경 (H2 인메모리)
 - **H2 웹 콘솔**: `http://localhost:8080/h2-console`
