@@ -2,28 +2,22 @@ spring:
   application:
     name: MOTMAP
 
-  # H2 데이터베이스 설정
+  # MySQL 데이터베이스 설정 (로컬 개발)
   datasource:
-    url: jdbc:h2:mem:motmap
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: jdbc:mysql://127.0.0.1:3306/motmap?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: admin
+    password: 091122john
 
   # JPA 설정
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.H2Dialect
-
-  # H2 콘솔 활성화 (개발용)
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+        dialect: org.hibernate.dialect.MySQL8Dialect
 
   # Thymeleaf 설정
   thymeleaf:
@@ -58,3 +52,8 @@ logging:
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   file:
     name: logs/motmap.log
+
+# Flyway 마이그레이션 (선택)
+flyway:
+  enabled: true
+  locations: classpath:db/migration

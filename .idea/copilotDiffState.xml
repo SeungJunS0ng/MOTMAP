@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/src/main/resources/application.yml">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/src/main/resources/application.yml" />
+              <option name="originalContent" value="spring:&#10;  application:&#10;    name: MOTMAP&#10;&#10;  # H2 데이터베이스 설정&#10;  datasource:&#10;    url: jdbc:h2:mem:motmap&#10;    driver-class-name: org.h2.Driver&#10;    username: sa&#10;    password:&#10;&#10;  # JPA 설정&#10;  jpa:&#10;    hibernate:&#10;      ddl-auto: create-drop&#10;    show-sql: true&#10;    properties:&#10;      hibernate:&#10;        format_sql: true&#10;        dialect: org.hibernate.dialect.H2Dialect&#10;&#10;  # H2 콘솔 활성화 (개발용)&#10;  h2:&#10;    console:&#10;      enabled: true&#10;      path: /h2-console&#10;&#10;  # Thymeleaf 설정&#10;  thymeleaf:&#10;    cache: false&#10;    prefix: classpath:/templates/&#10;    suffix: .html&#10;&#10;# 서버 포트 설정&#10;server:&#10;  port: 8080&#10;&#10;# Swagger/OpenAPI 설정&#10;springdoc:&#10;  api-docs:&#10;    path: /api-docs&#10;  swagger-ui:&#10;    path: /swagger-ui.html&#10;    tags-sorter: alpha&#10;    operations-sorter: alpha&#10;    display-request-duration: true&#10;    display-operation-id: true&#10;&#10;# 로깅 설정&#10;logging:&#10;  level:&#10;    com.motmap: debug&#10;    org.springframework.web: debug&#10;    org.hibernate.SQL: debug&#10;    org.hibernate.type.descriptor.sql.BasicBinder: trace&#10;  pattern:&#10;    console: &quot;%d{yyyy-MM-dd HH:mm:ss} - %msg%n&quot;&#10;    file: &quot;%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n&quot;&#10;  file:&#10;    name: logs/motmap.log&#10;" />
+              <option name="updatedContent" value="spring:&#10;  application:&#10;    name: MOTMAP&#10;&#10;  # MySQL 데이터베이스 설정 (로컬 개발)&#10;  datasource:&#10;    url: jdbc:mysql://127.0.0.1:3306/motmap?useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=UTC&amp;useSSL=false&amp;allowPublicKeyRetrieval=true&#10;    driver-class-name: com.mysql.cj.jdbc.Driver&#10;    username: admin&#10;    password: 091122john&#10;&#10;  # JPA 설정&#10;  jpa:&#10;    hibernate:&#10;      ddl-auto: update&#10;    show-sql: true&#10;    properties:&#10;      hibernate:&#10;        format_sql: true&#10;        dialect: org.hibernate.dialect.MySQL8Dialect&#10;&#10;  # Thymeleaf 설정&#10;  thymeleaf:&#10;    cache: false&#10;    prefix: classpath:/templates/&#10;    suffix: .html&#10;&#10;# 서버 포트 설정&#10;server:&#10;  port: 8080&#10;&#10;# Swagger/OpenAPI 설정&#10;springdoc:&#10;  api-docs:&#10;    path: /api-docs&#10;  swagger-ui:&#10;    path: /swagger-ui.html&#10;    tags-sorter: alpha&#10;    operations-sorter: alpha&#10;    display-request-duration: true&#10;    display-operation-id: true&#10;&#10;# 로깅 설정&#10;logging:&#10;  level:&#10;    com.motmap: debug&#10;    org.springframework.web: debug&#10;    org.hibernate.SQL: debug&#10;    org.hibernate.type.descriptor.sql.BasicBinder: trace&#10;  pattern:&#10;    console: &quot;%d{yyyy-MM-dd HH:mm:ss} - %msg%n&quot;&#10;    file: &quot;%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n&quot;&#10;  file:&#10;    name: logs/motmap.log&#10;&#10;# Flyway 마이그레이션 (선택)&#10;flyway:&#10;  enabled: true&#10;  locations: classpath:db/migration" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
