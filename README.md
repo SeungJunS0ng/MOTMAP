@@ -18,11 +18,12 @@ Spring Boot와 카카오맵 API를 활용한 현대적인 맛집 지도 서비�
 ### Backend (Modern Java)
 - **Spring Boot 3.2.0** - 최신 스프링 프레임워크
 - **Spring Data JPA** - ORM & 데이터베이스 관리
+- **MySQL 8** - 프로덕션급 관계형 데이터베이스
+- **Hibernate** - JPA 구현체 (자동 DDL)
 - **Lombok** - 보일러플레이트 코드 제거
 - **Bean Validation** - 입력값 검증
-- **H2 Database** - 개발용 인메모리 DB
 - **Swagger UI (OpenAPI 3)** - 자동 API 문서화
-- **Gradle** - 빌드 도구 (Maven도 지원)
+- **Gradle** - 빌드 도구
 
 ### Frontend (Modern Web)
 - **HTML5 / CSS3 / JavaScript ES6+**
@@ -75,10 +76,10 @@ mvn spring-boot:run
 
 ### 4. 웹 브라우저 접속
 - **메인 서비스**: `http://localhost:8080`
-- **API 문서 (Swagger UI)**: `http://localhost:8080/swagger-ui/index.html`  
-  (springdoc starter 사용 시 기본 경로는 위와 같습니다)
-- **OpenAPI JSON**: `http://localhost:8080/v3/api-docs`
-- **데이터베이스 (개발용 H2 콘솔, 설정 시 활성화)**: `http://localhost:8080/h2-console`
+- **API 문서 (Swagger UI)**: `http://localhost:8080/swagger-ui.html`
+- **OpenAPI JSON**: `http://localhost:8080/api-docs`
+- **데이터베이스**: MySQL (localhost:3306/motmap)
+  - 접속: `mysql -u admin -p motmap` (비밀번호: 091122john)
 
 ## 📁 프로젝트 구조
 
@@ -155,22 +156,34 @@ MOTMAP/
 
 ## 💾 데이터베이스
 
-현재 기본 설정은 MySQL 로컬 연동입니다. `src/main/resources/application.yml`에서 데이터베이스 정보를 확인하세요.
+현재 **MySQL 데이터베이스**를 사용합니다. `src/main/resources/application.yml`에서 설정을 확인하세요.
 
-### MySQL 로컬 설정 예시
-- DB 이름: motmap
-- 호스트: 127.0.0.1
-- 포트: 3306
-- 사용자: admin
-- 비밀번호: 091122john
+### MySQL 설정 정보
+```yaml
+데이터베이스: motmap
+호스트: localhost
+포트: 3306
+사용자: admin
+비밀번호: 091122john
+문자셋: utf8mb4
+타임존: Asia/Seoul
+```
 
-> 운영 환경에서는 DB 비밀번호와 민감정보는 환경 변수 또는 시크릿 매니저로 관리하세요.
+### MySQL 초기 설정
+```bash
+# 1. MySQL 루트로 접속
+mysql -u root -p
 
-### 🔧 개발 환경 (H2 인메모리)
-- **H2 웹 콘솔**: `http://localhost:8080/h2-console`
-- **JDBC URL**: `jdbc:h2:mem:motmap`
-- **사용자명**: `sa` / **패스워드**: (없음)
-- **자동 테이블 생성**: DDL 자동 생성 (create-drop)
+# 2. 데이터베이스 및 사용자 생성
+source scripts/create_mysql_db.sql;
+
+# 3. 접속 확인
+mysql -u admin -p motmap
+```
+
+> 📖 **자세한 설정 가이드**: `MYSQL_SETUP.md` 참고
+> 
+> ⚠️ **보안**: 운영 환경에서는 비밀번호를 환경 변수로 관리하세요
 
 ### 📊 초기 데이터 (자동 생성)
 서울 명동 지역의 5개 테스트 맛집이 자동으로 생성됩니다:
