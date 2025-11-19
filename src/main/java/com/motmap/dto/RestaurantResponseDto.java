@@ -49,6 +49,12 @@ public class RestaurantResponseDto {
     @Schema(description = "수정일시", example = "2025-09-29T12:30:00")
     private LocalDateTime updatedAt;
 
+    @Schema(description = "작성자 사용자명", example = "john")
+    private String createdBy;
+
+    @Schema(description = "작성자 닉네임", example = "존")
+    private String createdByNickname;
+
     // Entity에서 DTO로 변환하는 생성자
     public RestaurantResponseDto(Restaurant restaurant) {
         this.id = restaurant.getId();
@@ -62,6 +68,12 @@ public class RestaurantResponseDto {
         this.longitude = restaurant.getLongitude();
         this.createdAt = restaurant.getCreatedAt();
         this.updatedAt = restaurant.getUpdatedAt();
+
+        // 사용자 정보 추가
+        if (restaurant.getUser() != null) {
+            this.createdBy = restaurant.getUser().getUsername();
+            this.createdByNickname = restaurant.getUser().getNickname();
+        }
     }
 
     // 정적 팩토리 메소드 추가
