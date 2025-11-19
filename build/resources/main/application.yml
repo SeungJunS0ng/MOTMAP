@@ -64,3 +64,8 @@ logging:
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   file:
     name: logs/motmap.log
+
+# JWT 설정
+jwt:
+  secret: motmap-secret-key-for-jwt-token-generation-must-be-at-least-256-bits-long-for-hs256-algorithm
+  expiration: 86400000  # 24시간 (밀리초)
