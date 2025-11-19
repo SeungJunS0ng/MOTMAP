@@ -59,7 +59,7 @@ logging:
   file:
     name: logs/motmap.log
 
-# Flyway 마이그레이션 (선택)
+# Flyway 마이그레이션 (H2 사용 시 비활성화)
 flyway:
-  enabled: true
+  enabled: false
   locations: classpath:db/migration
