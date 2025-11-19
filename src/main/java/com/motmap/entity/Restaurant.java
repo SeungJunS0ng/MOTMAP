@@ -10,14 +10,15 @@ import java.time.LocalDateTime;
     @Index(name = "idx_restaurant_category", columnList = "category"),
     @Index(name = "idx_restaurant_rating", columnList = "rating"),
     @Index(name = "idx_restaurant_location", columnList = "latitude, longitude"),
-    @Index(name = "idx_restaurant_created_at", columnList = "created_at")
+    @Index(name = "idx_restaurant_created_at", columnList = "created_at"),
+    @Index(name = "idx_restaurant_user", columnList = "user_id")
 })
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"createdAt", "updatedAt"})
+@ToString(exclude = {"createdAt", "updatedAt", "user"})
 @EqualsAndHashCode(of = {"name", "address"})
 public class Restaurant {
 
@@ -58,6 +59,11 @@ public class Restaurant {
     @DecimalMax(value = "180.0", message = "경도는 180도 이하여야 합니다")
     private Double longitude;
 
+    // 맛집을 생성한 사용자 (연관관계)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -75,10 +81,21 @@ public class Restaurant {
         this.latitude = latitude;
         this.longitude = longitude;
     }
+    
+    /**
+     * 사용자가 이 맛집의 소유자인지 확인
+     */
+    public boolean isOwnedBy(User user) {
+        if (this.user == null || user == null) {
+            return false;
+        }
+        return this.user.getId().equals(user.getId());
+    }
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate

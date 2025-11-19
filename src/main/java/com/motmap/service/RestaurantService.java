@@ -6,16 +6,21 @@ import com.motmap.dto.RestaurantPageResponseDto;
 import com.motmap.dto.RestaurantStatsDto;
 import com.motmap.entity.Category;
 import com.motmap.entity.Restaurant;
+import com.motmap.entity.User;
 import com.motmap.exception.RestaurantNotFoundException;
 import com.motmap.exception.DuplicateRestaurantException;
 import com.motmap.exception.InvalidLocationException;
 import com.motmap.exception.BusinessException;
 import com.motmap.exception.ErrorCode;
+import com.motmap.exception.UserNotFoundException;
 import com.motmap.repository.RestaurantRepository;
+import com.motmap.repository.UserRepository;
 import com.motmap.util.LocationUtils;
 import com.motmap.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
@@ -33,6 +38,7 @@ import java.util.stream.Collectors;
 
 import static com.motmap.exception.ErrorCode.INVALID_REQUEST;
 import static com.motmap.exception.ErrorCode.INVALID_RATING;
+import static com.motmap.exception.ErrorCode.UNAUTHORIZED;
 
 @Service
 @Transactional
@@ -41,6 +47,7 @@ import static com.motmap.exception.ErrorCode.INVALID_RATING;
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
+    private final UserRepository userRepository;
 
     // 모든 맛집 조회 (캐싱 적용)
     @Cacheable(value = "restaurants", key = "'all'")
@@ -110,6 +117,9 @@ public class RestaurantService {
 
     // Restaurant 엔티티 생성 헬퍼 메소드
     private Restaurant createRestaurantEntity(RestaurantRequestDto requestDto) {
+        // 현재 로그인한 사용자 가져오기
+        User currentUser = getCurrentUser();
+
         return Restaurant.builder()
                 .name(requestDto.getName())
                 .address(requestDto.getAddress())
@@ -118,16 +128,41 @@ public class RestaurantService {
                 .review(requestDto.getReview())
                 .latitude(requestDto.getLatitude())
                 .longitude(requestDto.getLongitude())
+                .user(currentUser)
                 .build();
     }
 
-    // 맛집 수정 (캐시 무효화)
+    /**
+     * 현재 로그인한 사용자 조회
+     */
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            log.warn("인증되지 않은 요청");
+            throw new BusinessException(ErrorCode.AUTHENTICATION_FAILED, "로그인이 필요합니다");
+        }
+
+        String username = authentication.getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다: " + username));
+    }
+
+    // 맛집 수정 (캐시 무효화) - 본인 것만 수정 가능
     @CacheEvict(value = {"restaurants", "categoryRestaurants", "highRatedRestaurants", "restaurantStats"}, allEntries = true)
     public RestaurantResponseDto updateRestaurant(Long id, RestaurantRequestDto requestDto) {
         log.debug("맛집 수정 시작 - ID: {}, 이름: {}", id, requestDto.getName());
 
         Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(() -> new RestaurantNotFoundException(id));
+
+        // 현재 로그인한 사용자 확인
+        User currentUser = getCurrentUser();
+
+        // 소유자 확인 (본인 것만 수정 가능)
+        if (!restaurant.isOwnedBy(currentUser)) {
+            log.warn("권한 없는 수정 시도 - 사용자: {}, 맛집 ID: {}", currentUser.getUsername(), id);
+            throw new BusinessException(UNAUTHORIZED, "본인이 등록한 맛집만 수정할 수 있습니다");
+        }
 
         // 엔티티의 비즈니스 메소드 활용
         restaurant.updateRestaurantInfo(
@@ -145,10 +180,22 @@ public class RestaurantService {
         return RestaurantResponseDto.from(updatedRestaurant);
     }
 
-    // 맛집 삭제 (캐시 무효화)
+    // 맛집 삭제 (캐시 무효화) - 본인 것만 삭제 가능
     @CacheEvict(value = {"restaurants", "categoryRestaurants", "highRatedRestaurants", "restaurantStats"}, allEntries = true)
     public void deleteRestaurant(Long id) {
         log.debug("맛집 삭제 시작 - ID: {}", id);
+
+        Restaurant restaurant = restaurantRepository.findById(id)
+                .orElseThrow(() -> new RestaurantNotFoundException(id));
+
+        // 현재 로그인한 사용자 확인
+        User currentUser = getCurrentUser();
+
+        // 소유자 확인 (본인 것만 삭제 가능)
+        if (!restaurant.isOwnedBy(currentUser)) {
+            log.warn("권한 없는 삭제 시도 - 사용자: {}, 맛집 ID: {}", currentUser.getUsername(), id);
+            throw new BusinessException(UNAUTHORIZED, "본인이 등록한 맛집만 삭제할 수 있습니다");
+        }
 
         if (!restaurantRepository.existsById(id)) {
             log.warn("삭제할 맛집을 찾을 수 없음 - ID: {}", id);
