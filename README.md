@@ -4,6 +4,9 @@ Spring Boot와 카카오맵 API를 활용한 현대적인 맛집 지도 서비�
 
 ## 🌟 주요 기능
 
+- **🔐 JWT 기반 인증 시스템**: 회원가입, 로그인, 토큰 인증
+- **👥 사용자 관리**: 20명의 테스트 계정, Role 기반 권한 (USER, ADMIN)
+- **🔒 소유권 관리**: 본인이 등록한 맛집만 수정/삭제 가능
 - **🗺️ 카카오맵 완전 연동**: 실제 지도에서 맛집 위치 확인 및 클릭으로 추가
 - **🍽️ 완전한 맛집 관리**: CRUD + 검색 + 필터링 기능
 - **⭐ 별점 & 리뷰 시스템**: 5점 만점 평가 및 상세 리뷰 작성
@@ -17,9 +20,11 @@ Spring Boot와 카카오맵 API를 활용한 현대적인 맛집 지도 서비�
 
 ### Backend (Modern Java)
 - **Spring Boot 3.2.0** - 최신 스프링 프레임워크
+- **Spring Security + JWT** - 토큰 기반 인증/인가
 - **Spring Data JPA** - ORM & 데이터베이스 관리
 - **MySQL 8** - 프로덕션급 관계형 데이터베이스
 - **Hibernate** - JPA 구현체 (자동 DDL)
+- **BCrypt** - 비밀번호 암호화
 - **Lombok** - 보일러플레이트 코드 제거
 - **Bean Validation** - 입력값 검증
 - **Swagger UI (OpenAPI 3)** - 자동 API 문서화
@@ -34,8 +39,9 @@ Spring Boot와 카카오맵 API를 활용한 현대적인 맛집 지도 서비�
 ## 📋 사전 요구사항
 
 1. **Java 17** 이상
-2. **IntelliJ IDEA** (권장) 또는 Eclipse
-3. **카카오 개발자 계정** 및 JavaScript 키
+2. **MySQL 8.0** 이상
+3. **IntelliJ IDEA** (권장) 또는 Eclipse
+4. **카카오 개발자 계정** 및 JavaScript 키
 
 ## 🚀 설치 및 실행
 
@@ -45,12 +51,24 @@ git clone [your-repository-url]
 cd MOTMAP
 ```
 
-### 2. 카카오맵 API 키 설정
+### 2. MySQL 데이터베이스 설정
+```bash
+# MySQL 루트 계정으로 접속
+mysql -u root -p
+
+# 데이터베이스 및 사용자 생성
+source scripts/create_mysql_db.sql;
+exit;
+```
+
+**자세한 설정은 `MYSQL_SETUP.md` 참고**
+
+### 3. 카카오맵 API 키 설정
 1. [Kakao Developers](https://developers.kakao.com/)에서 애플리케이션 등록
 2. **Web 플랫폼 등록**: `http://localhost:8080` 추가
 3. **JavaScript 키** 발급 및 적용 (이미 적용됨: `3ecea445ce0565e4d9cc34bb5cd216b2`)
 
-### 3. 애플리케이션 실행
+### 4. 애플리케이션 실행
 
 #### 🎯 IntelliJ IDEA (권장)
 ```
@@ -74,12 +92,20 @@ cd MOTMAP
 mvn spring-boot:run
 ```
 
-### 4. 웹 브라우저 접속
+### 5. 웹 브라우저 접속
 - **메인 서비스**: `http://localhost:8080`
 - **API 문서 (Swagger UI)**: `http://localhost:8080/swagger-ui.html`
 - **OpenAPI JSON**: `http://localhost:8080/api-docs`
 - **데이터베이스**: MySQL (localhost:3306/motmap)
   - 접속: `mysql -u admin -p motmap` (비밀번호: 091122john)
+
+### 6. 로그인 테스트
+**테스트 계정:**
+- 관리자: `admin` / `admin1234`
+- 일반 사용자: `john` / `john1234`, `kim` / `kim1234` 등
+- **전체 20명의 테스트 계정은 `LOGIN_GUIDE.md` 참고**
+
+**자세한 인증 가이드는 `LOGIN_GUIDE.md` 참고**
 
 ## 📁 프로젝트 구조
 
