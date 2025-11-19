@@ -31,6 +31,14 @@ spring:
     prefix: classpath:/templates/
     suffix: .html
 
+  # Spring MVC 설정 (favicon 비활성화)
+  mvc:
+    favicon:
+      enabled: false
+  web:
+    resources:
+      add-mappings: true
+
 # 서버 포트 설정
 server:
   port: 8080
