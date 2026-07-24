@@ -63,6 +63,18 @@ class RestaurantUI {
         // Detail modal
         document.getElementById('detailCloseBtn').addEventListener('click', () => this.hideDetail());
         document.getElementById('detailMapBtn').addEventListener('click', () => this.detailGoToMap());
+        const detailNaviBtn = document.getElementById('detailNaviBtn');
+        if (detailNaviBtn) {
+            detailNaviBtn.addEventListener('click', () => {
+                if (this._detailRestaurant && mapManager) {
+                    mapManager.openDirections(
+                        this._detailRestaurant.name,
+                        this._detailRestaurant.latitude,
+                        this._detailRestaurant.longitude
+                    );
+                }
+            });
+        }
     }
 
     // ── Form Address Search ──

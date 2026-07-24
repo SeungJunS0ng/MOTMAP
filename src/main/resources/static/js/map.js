@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════
 // MOTMAP — Kakao Map Manager
-// 카카오맵, 커스텀 오버레이, 이모지 마커, 내 위치, 드래프트 핀
+// 카카오맵, 커스텀 오버레이, 이모지 마커, 내 위치, 드래프트 핀, 마커 클러스터러, 반경 원, 길찾기
 // ═══════════════════════════════════════════
 
 class KakaoMapManager {
@@ -9,6 +9,9 @@ class KakaoMapManager {
         this.markers = [];
         this.overlays = [];
         this.geocoder = null;
+        this.places = null;
+        this.clusterer = null;
+        this.radiusCircle = null;
         this.selectedPosition = null;
         this.currentOverlay = null;
         this.myLocationOverlay = null;
@@ -26,6 +29,22 @@ class KakaoMapManager {
 
         this.map = new kakao.maps.Map(container, options);
         this.geocoder = new kakao.maps.services.Geocoder();
+
+        // Kakao Map Controls (MapType & Zoom)
+        const mapTypeControl = new kakao.maps.MapTypeControl();
+        this.map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+
+        const zoomControl = new kakao.maps.ZoomControl();
+        this.map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+
+        // Marker Clusterer
+        if (kakao.maps.MarkerClusterer) {
+            this.clusterer = new kakao.maps.MarkerClusterer({
+                map: this.map,
+                averageCenter: true,
+                minLevel: 6
+            });
+        }
 
         // Map click listener
         kakao.maps.event.addListener(this.map, 'click', (mouseEvent) => {
@@ -88,6 +107,31 @@ class KakaoMapManager {
         }
     }
 
+    // ── Draw Radius Circle (kakao.maps.Circle) ──
+    drawRadiusCircle(lat, lng, radiusMeters = 1000) {
+        this.removeRadiusCircle();
+
+        this.radiusCircle = new kakao.maps.Circle({
+            center: new kakao.maps.LatLng(lat, lng),
+            radius: radiusMeters,
+            strokeWeight: 2,
+            strokeColor: '#3B82F6',
+            strokeOpacity: 0.8,
+            strokeStyle: 'dashed',
+            fillColor: '#3B82F6',
+            fillOpacity: 0.12
+        });
+
+        this.radiusCircle.setMap(this.map);
+    }
+
+    removeRadiusCircle() {
+        if (this.radiusCircle) {
+            this.radiusCircle.setMap(null);
+            this.radiusCircle = null;
+        }
+    }
+
     // ── Current Location ──
     getCurrentLocation() {
         if (!navigator.geolocation) {
@@ -104,11 +148,12 @@ class KakaoMapManager {
 
             const locPosition = new kakao.maps.LatLng(lat, lng);
             this.map.setCenter(locPosition);
-            this.map.setLevel(3);
+            this.map.setLevel(4);
 
-            // Update My Location Pulse Overlay
+            // Update My Location Pulse Overlay & 1km Radius Circle
             this.setMyLocationMarker(lat, lng);
-            showToast('현재 위치로 이동했습니다 📍', 'success');
+            this.drawRadiusCircle(lat, lng, 1000);
+            showToast('현재 위치로 이동했습니다 (반경 1km 표시) 📍', 'success');
 
             // Recalculate card distances
             if (restaurantUI) restaurantUI.updateCardDistances();
@@ -123,7 +168,6 @@ class KakaoMapManager {
                     onSuccess,
                     (err2) => {
                         console.warn('Standard geolocation failed:', err2);
-                        // Fallback to map center
                         const center = this.map.getCenter();
                         const lat = center.getLat();
                         const lng = center.getLng();
@@ -178,6 +222,13 @@ class KakaoMapManager {
         return map[category] || category;
     }
 
+    // ── Kakao Map Directions (길찾기) ──
+    openDirections(name, lat, lng) {
+        const safeName = encodeURIComponent(name);
+        const url = `https://map.kakao.com/link/to/${safeName},${lat},${lng}`;
+        window.open(url, '_blank');
+    }
+
     // ── Add Marker ──
     addMarker(restaurant) {
         const position = new kakao.maps.LatLng(restaurant.latitude, restaurant.longitude);
@@ -212,6 +263,8 @@ class KakaoMapManager {
             `<span class="star-icon ${i < restaurant.rating ? 'filled' : ''}" style="font-size:0.78rem; color:${i < restaurant.rating ? '#F59E0B' : '#CBD5E1'}">★</span>`
         ).join('');
 
+        const escapedName = escapeHtml(restaurant.name).replace(/'/g, "\\'");
+
         const overlayContent = document.createElement('div');
         overlayContent.className = 'custom-overlay';
         overlayContent.innerHTML = `
@@ -220,7 +273,10 @@ class KakaoMapManager {
             <div class="overlay-stars">${starsHtml}</div>
             <div class="overlay-address">📍 ${escapeHtml(restaurant.address) || '주소 없음'}</div>
             ${restaurant.review ? `<div class="overlay-review">"${escapeHtml(restaurant.review)}"</div>` : ''}
-            <button class="overlay-btn" onclick="restaurantUI.showDetail(${restaurant.id})">상세보기</button>
+            <div style="display:flex; gap:6px; margin-top:8px;">
+                <button class="overlay-btn" onclick="restaurantUI.showDetail(${restaurant.id})">상세보기</button>
+                <button class="overlay-btn" onclick="mapManager.openDirections('${escapedName}', ${restaurant.latitude}, ${restaurant.longitude})" style="background:var(--accent-blue); flex:1;">🧭 길찾기</button>
+            </div>
         `;
 
         const infoOverlay = new kakao.maps.CustomOverlay({
