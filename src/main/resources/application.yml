@@ -4,10 +4,10 @@ spring:
 
   # MySQL 데이터베이스 설정
   datasource:
-    url: jdbc:mysql://localhost:3306/motmap?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://${MYSQLHOST:localhost}:${MYSQLPORT:3306}/${MYSQLDATABASE:motmap}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: admin
-    password: 091122john
+    username: ${SPRING_DATASOURCE_USERNAME:${MYSQLUSER:admin}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${MYSQLPASSWORD:091122john}}
     hikari:
       maximum-pool-size: 10
       connection-timeout: 30000
@@ -16,7 +16,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -25,7 +25,7 @@ spring:
 
   # Thymeleaf 설정
   thymeleaf:
-    cache: false
+    cache: true
     prefix: classpath:/templates/
     suffix: .html
 
@@ -39,7 +39,7 @@ spring:
 
 # 서버 포트 설정
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 # Swagger/OpenAPI 설정
 springdoc:
