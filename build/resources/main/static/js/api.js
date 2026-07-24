@@ -173,15 +173,6 @@ class ApiService {
     async getRestaurantsByUsername(username) {
         return this.request(`${this.baseUrl}/user/${encodeURIComponent(username)}`);
     }
-
-    async getAiCourse(restaurantId = null, lat = null, lng = null) {
-        let query = [];
-        if (restaurantId) query.push(`restaurantId=${restaurantId}`);
-        if (lat) query.push(`latitude=${lat}`);
-        if (lng) query.push(`longitude=${lng}`);
-        const qStr = query.length > 0 ? `?${query.join('&')}` : '';
-        return this.request(`${this.baseUrl}/ai-course${qStr}`);
-    }
 }
 
 // Global instance

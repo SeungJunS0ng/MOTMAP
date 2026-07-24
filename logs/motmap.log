@@ -8285,3 +8285,220 @@ Caused by: java.sql.SQLException: Access denied for user 'admin'@'localhost' (us
             users u1_0
 2026-07-24 22:48:28 [restartedMain] INFO  c.motmap.config.UserDataInitializer - 사용자 데이터가 이미 존재합니다. 초기화를 스킵합니다.
 2026-07-24 22:48:28 [restartedMain] INFO  o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-07-24 22:48:59 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-24 22:48:59 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-4 - Shutdown initiated...
+2026-07-24 22:48:59 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-4 - Shutdown completed.
+2026-07-24 22:49:02 [restartedMain] INFO  com.motmap.MotmapApplication - Starting MotmapApplication using Java 17.0.12 with PID 20508 (C:\Coding\MOTMAP\build\classes\java\main started by ASUS in C:\Coding\MOTMAP)
+2026-07-24 22:49:02 [restartedMain] DEBUG com.motmap.MotmapApplication - Running with Spring Boot v3.2.0, Spring v6.1.1
+2026-07-24 22:49:02 [restartedMain] INFO  com.motmap.MotmapApplication - No active profile set, falling back to 1 default profile: "default"
+2026-07-24 22:49:02 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-07-24 22:49:02 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-07-24 22:49:03 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-24 22:49:03 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 50 ms. Found 2 JPA repository interfaces.
+2026-07-24 22:49:04 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-07-24 22:49:04 [restartedMain] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-07-24 22:49:04 [restartedMain] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2026-07-24 22:49:04 [restartedMain] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-07-24 22:49:04 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1709 ms
+2026-07-24 22:49:04 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-07-24 22:49:04 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@65f12d7a
+2026-07-24 22:49:04 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-07-24 22:49:04 [restartedMain] INFO  o.s.b.a.h.H2ConsoleAutoConfiguration - H2 console available at '/h2-console'. Database available at 'jdbc:mysql://localhost:3306/motmap?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true'
+2026-07-24 22:49:04 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-07-24 22:49:04 [restartedMain] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
+2026-07-24 22:49:04 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-07-24 22:49:05 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-24 22:49:05 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-07-24 22:49:05 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2026-07-24 22:49:06 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-24 22:49:06 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-24 22:49:06 [restartedMain] DEBUG c.m.config.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-07-24 22:49:06 [restartedMain] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-07-24 22:49:07 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-24 22:49:07 [restartedMain] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+2026-07-24 22:49:07 [restartedMain] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 28 mappings in 'requestMappingHandlerMapping'
+2026-07-24 22:49:07 [restartedMain] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2026-07-24 22:49:07 [restartedMain] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@4501ddea, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@32ec0b5c, org.springframework.security.web.context.SecurityContextHolderFilter@125315c4, org.springframework.security.web.header.HeaderWriterFilter@2aaa435b, org.springframework.web.filter.CorsFilter@6aae43fd, org.springframework.web.filter.CorsFilter@3281e3a5, org.springframework.security.web.authentication.logout.LogoutFilter@3f21d549, com.motmap.config.JwtAuthenticationFilter@7451019b, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@1acdec67, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@3700b1b8, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@79249692, org.springframework.security.web.session.SessionManagementFilter@2356f60a, org.springframework.security.web.access.ExceptionTranslationFilter@4deaf4b3, org.springframework.security.web.access.intercept.AuthorizationFilter@15bc54d2]
+2026-07-24 22:49:07 [restartedMain] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2026-07-24 22:49:07 [restartedMain] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2026-07-24 22:49:08 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729
+2026-07-24 22:49:08 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
+2026-07-24 22:49:08 [restartedMain] INFO  com.motmap.MotmapApplication - Started MotmapApplication in 6.146 seconds (process running for 7.091)
+2026-07-24 22:49:08 [restartedMain] DEBUG org.hibernate.SQL - 
+    /* select
+        count(*) 
+    from
+        Restaurant x */ select
+            count(*) 
+        from
+            restaurants r1_0
+2026-07-24 22:49:08 [restartedMain] INFO  com.motmap.config.DataInitializer - 초기 데이터가 이미 존재합니다. 스킵합니다.
+2026-07-24 22:49:08 [restartedMain] DEBUG org.hibernate.SQL - 
+    /* select
+        count(*) 
+    from
+        User x */ select
+            count(*) 
+        from
+            users u1_0
+2026-07-24 22:49:08 [restartedMain] INFO  c.motmap.config.UserDataInitializer - 사용자 데이터가 이미 존재합니다. 초기화를 스킵합니다.
+2026-07-24 22:49:31 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-24 22:49:31 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-07-24 22:49:31 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Detected StandardServletMultipartResolver
+2026-07-24 22:49:31 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Detected AcceptHeaderLocaleResolver
+2026-07-24 22:49:31 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Detected FixedThemeResolver
+2026-07-24 22:49:31 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@4fb08944
+2026-07-24 22:49:31 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.support.SessionFlashMapManager@54c020ab
+2026-07-24 22:49:31 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2026-07-24 22:49:31 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 9 ms
+2026-07-24 22:49:31 [http-nio-8080-exec-1] WARN  o.s.w.s.h.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/' (previous null). Performing CorsConfiguration lookup. This is logged once only at WARN level, and every time at TRACE.
+2026-07-24 22:49:31 [http-nio-8080-exec-1] WARN  o.s.w.s.h.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/' (previous null). Performing MatchableHandlerMapping lookup. This is logged once only at WARN level, and every time at TRACE.
+2026-07-24 22:49:31 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - GET "/", parameters={}
+2026-07-24 22:49:31 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.motmap.controller.ViewController#index()
+2026-07-24 22:49:31 [http-nio-8080-exec-1] DEBUG o.s.w.s.v.ContentNegotiatingViewResolver - Selected 'text/html' given [text/html, application/xhtml+xml, image/avif, image/webp, image/apng, application/xml;q=0.9, */*;q=0.8, application/signed-exchange;v=b3;q=0.7]
+2026-07-24 22:49:32 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2026-07-24 22:49:32 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - GET "/css/style.css", parameters={}
+2026-07-24 22:49:32 [http-nio-8080-exec-2] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+2026-07-24 22:49:32 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - GET "/js/restaurant.js", parameters={}
+2026-07-24 22:49:32 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - GET "/js/map.js", parameters={}
+2026-07-24 22:49:32 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - GET "/js/main.js", parameters={}
+2026-07-24 22:49:32 [http-nio-8080-exec-5] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+2026-07-24 22:49:32 [http-nio-8080-exec-6] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+2026-07-24 22:49:32 [http-nio-8080-exec-4] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+2026-07-24 22:49:32 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - GET "/js/api.js", parameters={}
+2026-07-24 22:49:32 [http-nio-8080-exec-3] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+2026-07-24 22:49:32 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2026-07-24 22:49:32 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2026-07-24 22:49:32 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2026-07-24 22:49:32 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2026-07-24 22:49:32 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2026-07-24 22:49:32 [http-nio-8080-exec-7] DEBUG c.m.service.CustomUserDetailsService - 사용자 정보 로드 시도: kakao_kakao_user_437780
+2026-07-24 22:49:32 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    /* <criteria> */ select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.last_login_at,
+        u1_0.nickname,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.username=?
+2026-07-24 22:49:32 [http-nio-8080-exec-7] DEBUG c.m.service.CustomUserDetailsService - 사용자 정보 로드 성공: kakao_kakao_user_437780, 권한: USER
+2026-07-24 22:49:32 [http-nio-8080-exec-7] DEBUG c.m.config.JwtAuthenticationFilter - JWT 인증 성공: kakao_kakao_user_437780
+2026-07-24 22:49:32 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - GET "/api/restaurants", parameters={}
+2026-07-24 22:49:32 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.motmap.controller.RestaurantController#getAllRestaurants()
+2026-07-24 22:49:32 [http-nio-8080-exec-7] DEBUG c.motmap.service.RestaurantService - 전체 맛집 목록 조회 시작
+2026-07-24 22:49:32 [http-nio-8080-exec-7] DEBUG org.hibernate.SQL - 
+    /* <criteria> */ select
+        r1_0.id,
+        r1_0.address,
+        r1_0.category,
+        r1_0.created_at,
+        r1_0.image_url,
+        r1_0.latitude,
+        r1_0.longitude,
+        r1_0.name,
+        r1_0.rating,
+        r1_0.review,
+        r1_0.updated_at,
+        r1_0.user_id 
+    from
+        restaurants r1_0
+2026-07-24 22:49:32 [http-nio-8080-exec-7] DEBUG c.motmap.service.RestaurantService - 전체 맛집 5개 조회 완료
+2026-07-24 22:49:32 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-07-24 22:49:32 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[RestaurantResponseDto(id=1, name=명동교자, address=서울특별시 중구 명동2가 25-2, category=KOREAN, categoryDisplay (truncated)...]
+2026-07-24 22:49:32 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2026-07-24 22:50:21 [File Watcher] INFO  o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 6 class path changes (0 additions, 6 deletions, 0 modifications)
+2026-07-24 22:50:21 [Thread-5] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-24 22:50:21 [Thread-5] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-07-24 22:50:21 [Thread-5] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-07-24 22:50:21 [restartedMain] INFO  com.motmap.MotmapApplication - Starting MotmapApplication using Java 17.0.12 with PID 20508 (C:\Coding\MOTMAP\build\classes\java\main started by ASUS in C:\Coding\MOTMAP)
+2026-07-24 22:50:21 [restartedMain] DEBUG com.motmap.MotmapApplication - Running with Spring Boot v3.2.0, Spring v6.1.1
+2026-07-24 22:50:21 [restartedMain] INFO  com.motmap.MotmapApplication - No active profile set, falling back to 1 default profile: "default"
+2026-07-24 22:50:22 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-24 22:50:22 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 61 ms. Found 2 JPA repository interfaces.
+2026-07-24 22:50:22 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-07-24 22:50:22 [restartedMain] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-07-24 22:50:22 [restartedMain] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2026-07-24 22:50:22 [restartedMain] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-07-24 22:50:22 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1010 ms
+2026-07-24 22:50:22 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Starting...
+2026-07-24 22:50:22 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-2 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6a448555
+2026-07-24 22:50:22 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Start completed.
+2026-07-24 22:50:22 [restartedMain] INFO  o.s.b.a.h.H2ConsoleAutoConfiguration - H2 console available at '/h2-console'. Database available at 'jdbc:mysql://localhost:3306/motmap?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true'
+2026-07-24 22:50:22 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-07-24 22:50:22 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-07-24 22:50:22 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-24 22:50:22 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-07-24 22:50:22 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2026-07-24 22:50:22 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-24 22:50:22 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-24 22:50:23 [restartedMain] DEBUG c.m.config.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-07-24 22:50:23 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-24 22:50:24 [restartedMain] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+2026-07-24 22:50:24 [restartedMain] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 12 mappings in 'requestMappingHandlerMapping'
+2026-07-24 22:50:24 [restartedMain] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2026-07-24 22:50:24 [restartedMain] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@45fb6c92, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@22136270, org.springframework.security.web.context.SecurityContextHolderFilter@44e2aacf, org.springframework.security.web.header.HeaderWriterFilter@3a27284d, org.springframework.web.filter.CorsFilter@5a69bc55, org.springframework.web.filter.CorsFilter@3f3f5ad9, org.springframework.security.web.authentication.logout.LogoutFilter@6a41b9c4, com.motmap.config.JwtAuthenticationFilter@3fab2134, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@3a263dee, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@39c00fa7, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@21be2e50, org.springframework.security.web.session.SessionManagementFilter@16d29684, org.springframework.security.web.access.ExceptionTranslationFilter@6d126518, org.springframework.security.web.access.intercept.AuthorizationFilter@5887a69f]
+2026-07-24 22:50:24 [restartedMain] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2026-07-24 22:50:24 [restartedMain] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2026-07-24 22:50:24 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729
+2026-07-24 22:50:24 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
+2026-07-24 22:50:24 [restartedMain] INFO  com.motmap.MotmapApplication - Started MotmapApplication in 3.329 seconds (process running for 83.744)
+2026-07-24 22:50:24 [restartedMain] DEBUG org.hibernate.SQL - 
+    /* select
+        count(*) 
+    from
+        Restaurant x */ select
+            count(*) 
+        from
+            restaurants r1_0
+2026-07-24 22:50:24 [restartedMain] INFO  com.motmap.config.DataInitializer - 초기 데이터가 이미 존재합니다. 스킵합니다.
+2026-07-24 22:50:24 [restartedMain] DEBUG org.hibernate.SQL - 
+    /* select
+        count(*) 
+    from
+        User x */ select
+            count(*) 
+        from
+            users u1_0
+2026-07-24 22:50:24 [restartedMain] INFO  c.motmap.config.UserDataInitializer - 사용자 데이터가 이미 존재합니다. 초기화를 스킵합니다.
+2026-07-24 22:50:24 [restartedMain] INFO  o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-07-24 22:50:26 [File Watcher] INFO  o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 12 class path changes (2 additions, 0 deletions, 10 modifications)
+2026-07-24 22:50:26 [Thread-7] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-24 22:50:26 [Thread-7] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Shutdown initiated...
+2026-07-24 22:50:26 [Thread-7] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Shutdown completed.
+2026-07-24 22:50:26 [restartedMain] INFO  com.motmap.MotmapApplication - Starting MotmapApplication using Java 17.0.12 with PID 20508 (C:\Coding\MOTMAP\build\classes\java\main started by ASUS in C:\Coding\MOTMAP)
+2026-07-24 22:50:26 [restartedMain] DEBUG com.motmap.MotmapApplication - Running with Spring Boot v3.2.0, Spring v6.1.1
+2026-07-24 22:50:26 [restartedMain] INFO  com.motmap.MotmapApplication - No active profile set, falling back to 1 default profile: "default"
+2026-07-24 22:50:27 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-24 22:50:27 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 21 ms. Found 2 JPA repository interfaces.
+2026-07-24 22:50:27 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-07-24 22:50:27 [restartedMain] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-07-24 22:50:27 [restartedMain] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2026-07-24 22:50:27 [restartedMain] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-07-24 22:50:27 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 785 ms
+2026-07-24 22:50:27 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-3 - Starting...
+2026-07-24 22:50:27 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-3 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3a36620c
+2026-07-24 22:50:27 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-3 - Start completed.
+2026-07-24 22:50:27 [restartedMain] INFO  o.s.b.a.h.H2ConsoleAutoConfiguration - H2 console available at '/h2-console'. Database available at 'jdbc:mysql://localhost:3306/motmap?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true'
+2026-07-24 22:50:27 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-07-24 22:50:27 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-07-24 22:50:27 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-24 22:50:27 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-07-24 22:50:27 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2026-07-24 22:50:27 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-24 22:50:27 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-24 22:50:27 [restartedMain] DEBUG c.m.config.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-07-24 22:50:27 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-07-24 22:50:27 [restartedMain] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+2026-07-24 22:50:27 [restartedMain] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 27 mappings in 'requestMappingHandlerMapping'
+2026-07-24 22:50:27 [restartedMain] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2026-07-24 22:50:28 [restartedMain] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@45adb319, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@4452634e, org.springframework.security.web.context.SecurityContextHolderFilter@2bfcda0a, org.springframework.security.web.header.HeaderWriterFilter@733852fe, org.springframework.web.filter.CorsFilter@166aece1, org.springframework.web.filter.CorsFilter@6f17132d, org.springframework.security.web.authentication.logout.LogoutFilter@454896d4, com.motmap.config.JwtAuthenticationFilter@6084d9e4, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@321419dc, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@38a12c2, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@478a40ad, org.springframework.security.web.session.SessionManagementFilter@15b3c369, org.springframework.security.web.access.ExceptionTranslationFilter@57c9d70e, org.springframework.security.web.access.intercept.AuthorizationFilter@44fb978]
+2026-07-24 22:50:28 [restartedMain] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2026-07-24 22:50:28 [restartedMain] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
