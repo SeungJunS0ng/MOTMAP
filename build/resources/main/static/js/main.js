@@ -332,34 +332,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Kakao Social Login button listener
-    const kakaoLoginBtn = document.getElementById('kakaoLoginBtn');
-    if (kakaoLoginBtn) {
-        kakaoLoginBtn.addEventListener('click', async () => {
-            try {
-                showToast('카카오 1초 소셜 로그인 처리 중... 💛', 'info');
-                // Unique Kakao ID generation for seamless instant login
-                let storedKakaoId = localStorage.getItem('motmap_kakao_id');
-                if (!storedKakaoId) {
-                    storedKakaoId = 'kakao_user_' + Math.floor(100000 + Math.random() * 900000);
-                    localStorage.setItem('motmap_kakao_id', storedKakaoId);
-                }
-
-                const res = await apiService.kakaoLogin({
-                    kakaoId: storedKakaoId,
-                    nickname: '카카오 맛집 마스터 💛',
-                    email: `${storedKakaoId}@kakao.com`
-                });
-
-                isGuestMode = false;
-                showToast(`환영합니다, ${res.nickname}님! 💛 (카카오 로그인)`, 'success');
-                hideAuthModal();
-                initApp();
-            } catch (err) {
-                showToast(err.message || '카카오 로그인에 실패했습니다', 'error');
-            }
-        });
-    }
     // Theme
     initTheme();
 

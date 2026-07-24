@@ -174,19 +174,6 @@ class ApiService {
         return this.request(`${this.baseUrl}/user/${encodeURIComponent(username)}`);
     }
 
-    async kakaoLogin(kakaoData) {
-        const res = await this.request(`${this.authUrl}/kakao`, {
-            method: 'POST',
-            body: JSON.stringify(kakaoData)
-        });
-        if (res.token) {
-            localStorage.setItem('motmap_token', res.token);
-            localStorage.setItem('motmap_username', res.username);
-            localStorage.setItem('motmap_nickname', res.nickname);
-        }
-        return res;
-    }
-
     async getAiCourse(restaurantId = null, lat = null, lng = null) {
         let query = [];
         if (restaurantId) query.push(`restaurantId=${restaurantId}`);

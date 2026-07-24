@@ -46,14 +46,6 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/kakao")
-    @Operation(summary = "카카오 소셜 로그인", description = "카카오 소셜 회원가입/로그인으로 JWT 토큰을 발급받습니다")
-    public ResponseEntity<AuthResponseDto> kakaoLogin(@Valid @RequestBody com.motmap.dto.KakaoLoginRequestDto kakaoRequest) {
-        log.info("카카오 소셜 로그인 요청: {}", kakaoRequest.getKakaoId());
-        AuthResponseDto response = authService.kakaoLogin(kakaoRequest);
-        return ResponseEntity.ok(response);
-    }
-
     /**
      * 회원가입
      *
