@@ -133,14 +133,14 @@ class KakaoMapManager {
         }
     }
 
-    // ── Current Location & Fallback Handler ──
+    // ── Current Location (Seamless Auto Fallback) ──
     getCurrentLocation() {
         if (!navigator.geolocation) {
-            this.promptCustomLocation('이 브라우저는 위치 서비스를 지원하지 않습니다.');
+            this.setCenterAsMyLocation();
             return;
         }
 
-        const loadingToast = showToast('현재 위치를 확인하는 중입니다... (클릭하여 닫기)', 'info', 0);
+        const loadingToast = showToast('현재 위치를 확인하는 중입니다...', 'info', 0);
 
         const dismissLoading = () => {
             if (loadingToast) removeToast(loadingToast);
@@ -150,76 +150,46 @@ class KakaoMapManager {
             dismissLoading();
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
-            this.currentCoords = { lat, lng };
 
             const locPosition = new kakao.maps.LatLng(lat, lng);
             this.map.setCenter(locPosition);
             this.map.setLevel(4);
 
-            // Update My Location Pulse Overlay & 1km Radius Circle
-            this.setMyLocationMarker(lat, lng);
-            this.drawRadiusCircle(lat, lng, 1000);
-            showToast('현재 위치로 이동했습니다 (반경 1km 표시) 📍', 'success');
-
-            // Recalculate card distances
-            if (restaurantUI) restaurantUI.updateCardDistances();
+            this.applyMyLocation(lat, lng, '현재 위치로 이동했습니다 (반경 1km 표시) 📍');
         };
 
         const onError = (err) => {
             dismissLoading();
-            console.warn('Geolocation error:', err);
-            let message = '위치 정보를 가져올 수 없습니다.';
-
-            if (err && err.code === 1) { // PERMISSION_DENIED
-                message = '브라우저 위치 권한이 차단되어 있습니다. (주소창 🔒 클릭 → 위치 허용)';
-            } else if (err && err.code === 2) { // POSITION_UNAVAILABLE
-                message = '데스크톱 PC 네트워크 환경으로 위치 센서를 찾을 수 없습니다.';
-            } else if (err && err.code === 3) { // TIMEOUT
-                message = '위치 탐색 시간이 초과되었습니다.';
-            }
-
-            this.promptCustomLocation(message);
+            console.warn('Geolocation unavailable, defaulting to map center:', err);
+            this.setCenterAsMyLocation();
         };
 
-        // Strict 2.5s fast timeout for Desktop PC
+        // Fast 2-second attempt for seamless experience
         try {
             navigator.geolocation.getCurrentPosition(
                 onSuccess,
                 onError,
-                { enableHighAccuracy: false, timeout: 2500, maximumAge: 300000 }
+                { enableHighAccuracy: false, timeout: 2000, maximumAge: 300000 }
             );
         } catch (e) {
             onError(e);
         }
     }
 
-    // ── Custom Location Prompt for PC / Permission Denied ──
-    promptCustomLocation(reasonMessage) {
-        showToast(reasonMessage, 'warning');
+    // ── Seamless Map Center Fallback ──
+    setCenterAsMyLocation() {
+        const center = this.map.getCenter();
+        const lat = center.getLat();
+        const lng = center.getLng();
+        this.applyMyLocation(lat, lng, '지도 중심점이 기준 위치로 설정되었습니다 📍');
+    }
 
-        showConfirm(
-            '📍 내 위치 지정',
-            `${reasonMessage}\n\n현재 계신 지역이나 동네명(예: '명동', '강남역', '성수동')을 검색하여 내 위치로 설정하시겠습니까?`,
-            () => {
-                const userPlace = prompt('현재 위치로 설정할 지역/동네/건물명을 입력하세요:', '명동');
-                if (userPlace && userPlace.trim()) {
-                    this.searchPlaceOrAddress(userPlace.trim(), (res) => {
-                        if (res) {
-                            this.currentCoords = { lat: res.lat, lng: res.lng };
-                            const coords = new kakao.maps.LatLng(res.lat, res.lng);
-                            this.map.setCenter(coords);
-                            this.map.setLevel(4);
-                            this.setMyLocationMarker(res.lat, res.lng);
-                            this.drawRadiusCircle(res.lat, res.lng, 1000);
-                            showToast(`내 위치가 "${res.placeName || userPlace}"(으)로 지정되었습니다 📍`, 'success');
-                            if (restaurantUI) restaurantUI.updateCardDistances();
-                        } else {
-                            showToast('입력하신 장소를 찾을 수 없습니다', 'warning');
-                        }
-                    });
-                }
-            }
-        );
+    applyMyLocation(lat, lng, toastMessage) {
+        this.currentCoords = { lat, lng };
+        this.setMyLocationMarker(lat, lng);
+        this.drawRadiusCircle(lat, lng, 1000);
+        showToast(toastMessage, 'info');
+        if (restaurantUI) restaurantUI.updateCardDistances();
     }
 
     // ── Set My Location Marker ──
