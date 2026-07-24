@@ -30,6 +30,14 @@ class KakaoMapManager {
         this.map = new kakao.maps.Map(container, options);
         this.geocoder = new kakao.maps.services.Geocoder();
 
+        // Relayout & center map after container render
+        setTimeout(() => {
+            if (this.map) {
+                this.map.relayout();
+                this.map.setCenter(options.center);
+            }
+        }, 150);
+
         // Kakao Map Controls (MapType & Zoom)
         const mapTypeControl = new kakao.maps.MapTypeControl();
         this.map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
