@@ -4,13 +4,18 @@ spring:
 
   # 데이터베이스 설정 (클라우드 환경 자동 감지 / H2 인메모리 기본 폴백)
   datasource:
-    url: ${SPRING_DATASOURCE_URL:${MYSQL_URL:jdbc:h2:mem:motmapdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL}}
-    driver-class-name: ${SPRING_DATASOURCE_DRIVER:org.h2.Driver}
-    username: ${SPRING_DATASOURCE_USERNAME:${MYSQLUSER:sa}}
-    password: ${SPRING_DATASOURCE_PASSWORD:${MYSQLPASSWORD:}}
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:motmapdb;DB_CLOSE_DELAY=-1;MODE=MySQL}
+    driver-class-name: ${SPRING_DRIVER_CLASS_NAME:org.h2.Driver}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
     hikari:
       maximum-pool-size: 10
       connection-timeout: 30000
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
 
   # JPA 설정
   jpa:
