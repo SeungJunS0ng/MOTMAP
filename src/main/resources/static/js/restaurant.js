@@ -54,6 +54,12 @@ class RestaurantUI {
         // Chips
         document.getElementById('chipHighRated').addEventListener('click', () => this.toggleChip('highRated'));
         document.getElementById('chipNearby').addEventListener('click', () => this.toggleChip('nearby'));
+        const chipSetLocation = document.getElementById('chipSetLocation');
+        if (chipSetLocation) {
+            chipSetLocation.addEventListener('click', () => {
+                if (mapManager) mapManager.promptSetMyLocation();
+            });
+        }
         document.getElementById('chipReset').addEventListener('click', () => this.resetFilters());
 
         // Review character counter

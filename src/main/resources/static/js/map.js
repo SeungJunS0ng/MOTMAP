@@ -56,6 +56,63 @@ class KakaoMapManager {
         document.getElementById('currentLocationBtn').addEventListener('click', () => {
             this.getCurrentLocation();
         });
+
+        // Restore saved location after init
+        setTimeout(() => {
+            this.loadSavedLocation();
+        }, 400);
+    }
+
+    // ── LocalStorage Location Persistence ──
+    loadSavedLocation() {
+        try {
+            const saved = localStorage.getItem('motmap_my_location');
+            if (saved) {
+                const { lat, lng, name } = JSON.parse(saved);
+                if (lat && lng) {
+                    this.currentCoords = { lat, lng };
+                    const coords = new kakao.maps.LatLng(lat, lng);
+                    this.map.setCenter(coords);
+                    this.setMyLocationMarker(lat, lng);
+                    this.drawRadiusCircle(lat, lng, 1000);
+                    showToast(`저장된 기준 위치("${name || '내 위치'}")로 설정되었습니다 📍`, 'info');
+                    if (restaurantUI) restaurantUI.updateCardDistances();
+                    return true;
+                }
+            }
+        } catch (e) {
+            console.warn('Failed to load saved location:', e);
+        }
+        return false;
+    }
+
+    saveMyLocation(lat, lng, name) {
+        try {
+            localStorage.setItem('motmap_my_location', JSON.stringify({ lat, lng, name }));
+        } catch (e) {
+            console.warn('Failed to save location:', e);
+        }
+    }
+
+    promptSetMyLocation() {
+        const userPlace = prompt("현재 계신 실제 동네나 장소명(예: '성수동', '강남역', '명동', '송파구')을 입력하세요:", "명동");
+        if (userPlace && userPlace.trim()) {
+            const query = userPlace.trim();
+            this.searchPlaceOrAddress(query, (res) => {
+                if (res) {
+                    const lat = res.lat;
+                    const lng = res.lng;
+                    const name = res.placeName || query;
+                    this.saveMyLocation(lat, lng, name);
+                    const coords = new kakao.maps.LatLng(lat, lng);
+                    this.map.setCenter(coords);
+                    this.map.setLevel(4);
+                    this.applyMyLocation(lat, lng, `내 위치가 "${name}"(으)로 설정 및 저장되었습니다 📍`);
+                } else {
+                    showToast(`"${query}" 장소를 찾을 수 없습니다.`, 'warning');
+                }
+            });
+        }
     }
 
     // ── Map Click → Show Draft Pin & Form ──
