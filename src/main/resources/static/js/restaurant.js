@@ -443,7 +443,15 @@ class RestaurantUI {
             longitude: lng
         };
 
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalText = submitBtn ? submitBtn.innerHTML : '💾 저장하기';
+
         try {
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '⌛ 저장 중...';
+            }
+
             if (this.editingId) {
                 await apiService.updateRestaurant(this.editingId, data);
                 showToast('맛집 정보가 수정되었습니다', 'success');
@@ -456,6 +464,11 @@ class RestaurantUI {
             await this.loadAndRenderRestaurants();
         } catch (error) {
             showToast(error.message || '저장에 실패했습니다', 'error');
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
         }
     }
 
