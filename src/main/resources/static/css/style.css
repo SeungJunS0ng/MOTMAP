@@ -1559,8 +1559,8 @@ h1, h2, h3, h4 { font-weight: 700; line-height: 1.2; }
     }
 
     .map-section {
-        height: 42vh;
-        min-height: 240px;
+        height: 40vh;
+        min-height: 230px;
         flex: none;
     }
 
@@ -1577,17 +1577,11 @@ h1, h2, h3, h4 { font-weight: 700; line-height: 1.2; }
     }
 
     .header-right {
-        gap: 4px;
+        gap: 6px;
     }
 
-    .header-right .btn {
-        padding: 5px 8px !important;
-        font-size: 0.74rem !important;
-        border-radius: 6px !important;
-    }
-
-    .logo-text {
-        font-size: 1.05rem;
+    .user-badge {
+        padding: 4px 6px !important;
     }
 
     .user-badge span:not(.avatar) {
@@ -1614,15 +1608,30 @@ h1, h2, h3, h4 { font-weight: 700; line-height: 1.2; }
     }
 }
 
+@media (max-width: 600px) {
+    .header-right .btn .btn-text {
+        display: none;
+    }
+    .header-right .btn {
+        padding: 6px 10px !important;
+        border-radius: 8px !important;
+        font-size: 0.85rem !important;
+    }
+}
+
 @media (max-width: 480px) {
     .header {
         padding: 0 10px;
     }
 
     .logo-icon {
-        width: 30px;
-        height: 30px;
+        width: 32px;
+        height: 32px;
         font-size: 0.95rem;
+    }
+
+    .logo-text {
+        font-size: 1.05rem;
     }
 
     .search-area,
@@ -1643,16 +1652,19 @@ h1, h2, h3, h4 { font-weight: 700; line-height: 1.2; }
 
     .filter-row select {
         padding: 6px 10px;
-        font-size: 0.76rem;
+        font-size: 0.78rem;
     }
 
     .filter-chips {
-        gap: 4px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
     }
 
     .filter-chips .chip {
-        padding: 4px 8px;
-        font-size: 0.74rem;
+        padding: 6px 10px;
+        font-size: 0.78rem;
+        border-radius: 8px;
     }
 }
 
