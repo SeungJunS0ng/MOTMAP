@@ -82,6 +82,7 @@ public class SecurityConfig {
                                 "/",                      // 메인 페이지
                                 "/css/**",                // 정적 리소스
                                 "/js/**",
+                                "/favicon.ico",           // 파비콘
                                 "/swagger-ui/**",         // Swagger UI
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
