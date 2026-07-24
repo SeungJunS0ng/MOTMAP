@@ -1555,16 +1555,19 @@ h1, h2, h3, h4 { font-weight: 700; line-height: 1.2; }
 
     .main-container {
         flex-direction: column;
+        height: calc(100dvh - var(--header-height));
     }
 
     .map-section {
-        height: 45vh;
-        min-height: 280px;
+        height: 42vh;
+        min-height: 240px;
+        flex: none;
     }
 
     .sidebar {
         width: 100%;
-        height: calc(55vh - var(--header-height));
+        flex: 1;
+        overflow-y: auto;
         border-left: none;
         border-top: 1px solid var(--border-light);
     }
@@ -1573,8 +1576,18 @@ h1, h2, h3, h4 { font-weight: 700; line-height: 1.2; }
         display: flex;
     }
 
+    .header-right {
+        gap: 4px;
+    }
+
+    .header-right .btn {
+        padding: 5px 8px !important;
+        font-size: 0.74rem !important;
+        border-radius: 6px !important;
+    }
+
     .logo-text {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
     }
 
     .user-badge span:not(.avatar) {
@@ -1582,38 +1595,64 @@ h1, h2, h3, h4 { font-weight: 700; line-height: 1.2; }
     }
 
     .modal-card {
-        margin: 16px;
+        margin: 12px;
+        padding: 20px;
+        max-height: 85dvh;
     }
 
     .toast-container {
-        left: 16px;
-        right: 16px;
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
     }
 
     .toast {
         min-width: auto;
         max-width: 100%;
+        padding: 10px 14px;
+        font-size: 0.8rem;
     }
 }
 
 @media (max-width: 480px) {
     .header {
-        padding: 0 12px;
+        padding: 0 10px;
+    }
+
+    .logo-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 0.95rem;
     }
 
     .search-area,
     .filter-area,
     .restaurant-list-section {
-        padding-left: 14px;
-        padding-right: 14px;
+        padding-left: 12px;
+        padding-right: 12px;
     }
 
     .restaurant-card {
-        padding: 14px;
+        padding: 12px;
     }
 
     .filter-row {
-        flex-direction: column;
+        flex-direction: row;
+        gap: 6px;
+    }
+
+    .filter-row select {
+        padding: 6px 10px;
+        font-size: 0.76rem;
+    }
+
+    .filter-chips {
+        gap: 4px;
+    }
+
+    .filter-chips .chip {
+        padding: 4px 8px;
+        font-size: 0.74rem;
     }
 }
 
