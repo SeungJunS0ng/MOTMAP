@@ -125,6 +125,7 @@ public class RestaurantService {
                 .category(requestDto.getCategory())
                 .rating(requestDto.getRating())
                 .review(requestDto.getReview())
+                .imageUrl(requestDto.getImageUrl())
                 .latitude(requestDto.getLatitude())
                 .longitude(requestDto.getLongitude())
                 .user(currentUser)
@@ -171,7 +172,8 @@ public class RestaurantService {
                 requestDto.getRating(),
                 requestDto.getReview(),
                 requestDto.getLatitude(),
-                requestDto.getLongitude()
+                requestDto.getLongitude(),
+                requestDto.getImageUrl()
         );
 
         Restaurant updatedRestaurant = restaurantRepository.save(restaurant);

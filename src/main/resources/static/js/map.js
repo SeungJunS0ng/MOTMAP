@@ -351,9 +351,17 @@ class KakaoMapManager {
 
         const categoryTag = `<span class="category-tag ${restaurant.category}">${this.getCategoryLabel(restaurant.category)}</span>`;
 
+        const hasOverlayImage = restaurant.imageUrl && restaurant.imageUrl.trim();
+        const overlayImageHtml = hasOverlayImage ? `
+            <div style="width:calc(100% + 32px); margin:-16px -16px 10px -16px; height:110px; border-radius:16px 16px 0 0; overflow:hidden; position:relative; background:var(--bg-tertiary);">
+                <img src="${escapeHtml(restaurant.imageUrl)}" alt="${escapeHtml(restaurant.name)}" style="width:100%; height:100%; object-fit:cover;" />
+            </div>
+        ` : '';
+
         const overlayContent = document.createElement('div');
         overlayContent.className = 'custom-overlay';
         overlayContent.innerHTML = `
+            ${overlayImageHtml}
             <button class="overlay-close">✕</button>
             <div class="overlay-name">${emoji} ${escapeHtml(restaurant.name)}</div>
             <div class="overlay-meta" style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">

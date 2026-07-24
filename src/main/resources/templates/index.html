@@ -124,6 +124,20 @@
                             </div>
                             <textarea id="restaurantReview" placeholder="이 맛집에 대한 소감을 남겨주세요..." rows="3" maxlength="500"></textarea>
                         </div>
+                        <div class="form-group">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                <label for="restaurantImage" style="margin:0;">📸 맛집 대표 사진 (선택)</label>
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <input type="text" id="restaurantImage" placeholder="사진 URL을 입력하거나 [📷 파일 선택] 버튼 클릭" style="flex:1;" />
+                                <input type="file" id="restaurantFile" accept="image/*" class="hidden" />
+                                <button type="button" class="btn btn-secondary" id="uploadFileBtn" style="padding:6px 12px; font-size:0.8rem; white-space:nowrap; border-radius:8px;">📷 파일 선택</button>
+                            </div>
+                            <div class="image-preview-container hidden" id="imagePreviewContainer" style="margin-top:10px; position:relative; border-radius:12px; overflow:hidden; border:1px solid var(--border-color); max-height:160px; background:var(--bg-tertiary);">
+                                <img id="imagePreview" src="" alt="맛집 사진 미리보기" style="width:100%; height:160px; object-fit:cover; display:block;" />
+                                <button type="button" id="removeImageBtn" style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.65); color:white; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; font-size:0.85rem; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px);">✕</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn btn-secondary" id="cancelFormBtn">취소</button>
@@ -226,6 +240,9 @@
     <!-- ═══ DETAIL MODAL ═══ -->
     <div class="modal-overlay detail-modal hidden" id="detailModal">
         <div class="modal-card">
+            <div id="detailImageHeader" class="hidden" style="width:calc(100% + 48px); height:220px; overflow:hidden; border-radius:24px 24px 0 0; margin:-24px -24px 16px -24px; position:relative; background:var(--bg-tertiary);">
+                <img id="detailImage" src="" alt="맛집 사진" style="width:100%; height:100%; object-fit:cover;" />
+            </div>
             <div class="detail-header" id="detailHeader">
                 <h2 id="detailName"></h2>
                 <div class="detail-stars" id="detailStars"></div>

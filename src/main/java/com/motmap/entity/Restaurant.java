@@ -92,6 +92,9 @@ public class Restaurant {
         return this.user.getId().equals(user.getId());
     }
 
+    @Column(length = 1000)
+    private String imageUrl;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -105,7 +108,7 @@ public class Restaurant {
 
     // 비즈니스 로직 메소드
     public void updateRestaurantInfo(String name, String address, Category category,
-                                    Integer rating, String review, Double latitude, Double longitude) {
+                                    Integer rating, String review, Double latitude, Double longitude, String imageUrl) {
         this.name = name;
         this.address = address;
         this.category = category;
@@ -113,6 +116,7 @@ public class Restaurant {
         this.review = review;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.imageUrl = imageUrl;
     }
 
     public boolean isHighRated() {

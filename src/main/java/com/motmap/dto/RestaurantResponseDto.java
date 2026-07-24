@@ -37,6 +37,9 @@ public class RestaurantResponseDto {
     @Schema(description = "리뷰 내용", example = "맛있는 만두집입니다!")
     private String review;
 
+    @Schema(description = "맛집 사진 URL", example = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5")
+    private String imageUrl;
+
     @Schema(description = "위도", example = "37.563692")
     private Double latitude;
 
@@ -67,6 +70,7 @@ public class RestaurantResponseDto {
         this.categoryDisplayName = restaurant.getCategory().getDisplayName();
         this.rating = restaurant.getRating();
         this.review = restaurant.getReview();
+        this.imageUrl = restaurant.getImageUrl();
         this.latitude = restaurant.getLatitude();
         this.longitude = restaurant.getLongitude();
         this.createdAt = restaurant.getCreatedAt();

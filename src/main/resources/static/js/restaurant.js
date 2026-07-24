@@ -92,6 +92,54 @@ class RestaurantUI {
                 }
             });
         }
+
+        // Photo upload / URL listeners
+        const uploadFileBtn = document.getElementById('uploadFileBtn');
+        const restaurantFile = document.getElementById('restaurantFile');
+        const restaurantImage = document.getElementById('restaurantImage');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const removeImageBtn = document.getElementById('removeImageBtn');
+
+        if (uploadFileBtn && restaurantFile) {
+            uploadFileBtn.addEventListener('click', () => restaurantFile.click());
+            restaurantFile.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    if (file.size > 5 * 1024 * 1024) {
+                        showToast('이미지 크기는 5MB 이하만 가능합니다', 'warning');
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = (evt) => {
+                        restaurantImage.value = evt.target.result;
+                        imagePreview.src = evt.target.result;
+                        imagePreviewContainer.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        if (restaurantImage) {
+            restaurantImage.addEventListener('input', () => {
+                const val = restaurantImage.value.trim();
+                if (val) {
+                    imagePreview.src = val;
+                    imagePreviewContainer.classList.remove('hidden');
+                } else {
+                    imagePreviewContainer.classList.add('hidden');
+                }
+            });
+        }
+
+        if (removeImageBtn) {
+            removeImageBtn.addEventListener('click', () => {
+                restaurantImage.value = '';
+                if (restaurantFile) restaurantFile.value = '';
+                imagePreviewContainer.classList.add('hidden');
+            });
+        }
     }
 
     // ── Form Address Search ──
@@ -389,8 +437,16 @@ class RestaurantUI {
                 }
             }
 
+            const hasImage = r.imageUrl && r.imageUrl.trim();
+            const imageHtml = hasImage ? `
+                <div class="card-image-banner" style="width:calc(100% + 32px); height:140px; margin:-16px -16px 12px -16px; overflow:hidden; border-radius:16px 16px 0 0; position:relative; background:var(--bg-tertiary);">
+                    <img src="${escapeHtml(r.imageUrl)}" alt="${safeName}" style="width:100%; height:100%; object-fit:cover;" />
+                </div>
+            ` : '';
+
             return `
                 <div class="restaurant-card" onclick="restaurantUI.showDetail(${r.id})">
+                    ${imageHtml}
                     <div class="card-top">
                         <span class="card-name"><span class="emoji">${emoji}</span> ${safeName} ${distanceStr}</span>
                         <div class="card-stars">${renderStars(r.rating)}</div>
@@ -441,10 +497,13 @@ class RestaurantUI {
         const lat = mapManager.selectedPosition ? mapManager.selectedPosition.lat : parseFloat(document.getElementById('restaurantAddress').dataset.lat);
         const lng = mapManager.selectedPosition ? mapManager.selectedPosition.lng : parseFloat(document.getElementById('restaurantAddress').dataset.lng);
 
+        const imageUrl = document.getElementById('restaurantImage') ? document.getElementById('restaurantImage').value.trim() : null;
+
         const data = {
             name, address, category,
             rating: this.selectedRating,
             review: review || null,
+            imageUrl: imageUrl || null,
             latitude: lat,
             longitude: lng
         };
@@ -489,6 +548,19 @@ class RestaurantUI {
             document.getElementById('restaurantAddress').dataset.lng = r.longitude;
             document.getElementById('restaurantCategory').value = r.category;
             document.getElementById('restaurantReview').value = r.review || '';
+
+            const imgInput = document.getElementById('restaurantImage');
+            const imgPreviewContainer = document.getElementById('imagePreviewContainer');
+            const imgPreview = document.getElementById('imagePreview');
+            if (r.imageUrl) {
+                if (imgInput) imgInput.value = r.imageUrl;
+                if (imgPreview) imgPreview.src = r.imageUrl;
+                if (imgPreviewContainer) imgPreviewContainer.classList.remove('hidden');
+            } else {
+                if (imgInput) imgInput.value = '';
+                if (imgPreviewContainer) imgPreviewContainer.classList.add('hidden');
+            }
+
             this.selectedRating = r.rating;
             this.updateStarDisplay();
 
@@ -556,6 +628,15 @@ class RestaurantUI {
             document.getElementById('detailReview').textContent = r.review || '리뷰가 없습니다';
             document.getElementById('detailOwner').textContent = r.createdByNickname || r.createdBy || '익명';
 
+            const detailImageHeader = document.getElementById('detailImageHeader');
+            const detailImage = document.getElementById('detailImage');
+            if (r.imageUrl && detailImageHeader && detailImage) {
+                detailImage.src = r.imageUrl;
+                detailImageHeader.classList.remove('hidden');
+            } else if (detailImageHeader) {
+                detailImageHeader.classList.add('hidden');
+            }
+
             const formatDate = (dateStr) => {
                 if (!dateStr) return '정보 없음';
                 const d = new Date(dateStr);
@@ -609,6 +690,12 @@ class RestaurantUI {
 
     resetForm() {
         document.getElementById('addRestaurantForm').reset();
+        const imgInput = document.getElementById('restaurantImage');
+        const imgPreviewContainer = document.getElementById('imagePreviewContainer');
+        const fileInput = document.getElementById('restaurantFile');
+        if (imgInput) imgInput.value = '';
+        if (fileInput) fileInput.value = '';
+        if (imgPreviewContainer) imgPreviewContainer.classList.add('hidden');
         this.selectedRating = 5;
         this.updateStarDisplay();
         this.editingId = null;
