@@ -74,10 +74,11 @@ class KakaoMapManager {
             }
         });
 
-        // Show form
+        // Show form & toast guidance
         const formEl = document.getElementById('restaurantForm');
         formEl.classList.remove('hidden');
         formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        showToast('선택한 위치의 주소가 채워졌습니다 📍 맛집 정보를 입력 후 저장해 주세요!', 'info');
     }
 
     // ── Set Draft Marker (📌) ──

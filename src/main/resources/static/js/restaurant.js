@@ -56,6 +56,17 @@ class RestaurantUI {
         document.getElementById('chipNearby').addEventListener('click', () => this.toggleChip('nearby'));
         document.getElementById('chipReset').addEventListener('click', () => this.resetFilters());
 
+        // Review character counter
+        const reviewTextarea = document.getElementById('restaurantReview');
+        const charCounter = document.getElementById('reviewCharCounter');
+        if (reviewTextarea && charCounter) {
+            reviewTextarea.addEventListener('input', () => {
+                const len = reviewTextarea.value.length;
+                charCounter.textContent = `${len} / 500자`;
+                charCounter.style.color = len >= 480 ? '#EF4444' : 'var(--text-tertiary)';
+            });
+        }
+
         // Form
         document.getElementById('addRestaurantForm').addEventListener('submit', (e) => this.handleSaveRestaurant(e));
         document.getElementById('cancelFormBtn').addEventListener('click', () => this.hideForm());
@@ -400,6 +411,13 @@ class RestaurantUI {
 
     async handleSaveRestaurant(e) {
         e.preventDefault();
+
+        if (typeof isGuestMode !== 'undefined' && (isGuestMode || !apiService.isLoggedIn())) {
+            showConfirm('로그인 필요 🔒', '맛집을 등록하려면 로그인이 필요합니다. 지금 로그인하시겠습니까?', () => {
+                showAuthModal();
+            });
+            return;
+        }
 
         const name = document.getElementById('restaurantName').value.trim();
         const address = document.getElementById('restaurantAddress').value.trim();

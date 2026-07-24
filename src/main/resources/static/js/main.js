@@ -7,6 +7,8 @@
 // TOAST NOTIFICATION SYSTEM
 // ════════════════════════════════
 
+let isGuestMode = false;
+
 function escapeHtml(str) {
     if (!str) return '';
     return String(str)
@@ -284,6 +286,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Login Header button
+    const loginHeaderBtn = document.getElementById('loginHeaderBtn');
+    if (loginHeaderBtn) {
+        loginHeaderBtn.addEventListener('click', showAuthModal);
+    }
+
+    // Guest Browse button
+    const guestBrowseBtn = document.getElementById('guestBrowseBtn');
+    if (guestBrowseBtn) {
+        guestBrowseBtn.addEventListener('click', () => {
+            hideAuthModal();
+            isGuestMode = true;
+            document.getElementById('loginHeaderBtn')?.classList.remove('hidden');
+            document.getElementById('logoutBtn')?.classList.add('hidden');
+            initApp();
+            showToast('둘러보기 모드로 접속했습니다 👁️ (등록 시 로그인 필요)', 'info');
+        });
+    }
+
     // Real-time error clearing on input
     ['Username', 'Email', 'Nickname', 'Password'].forEach(field => {
         const input = document.getElementById(`signup${field}`);
@@ -345,6 +366,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('confirmModal').addEventListener('click', (e) => {
         if (e.target === document.getElementById('confirmModal')) {
             hideConfirm();
+        }
+    });
+
+    // Global ESC key listener to close modals
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            hideConfirm();
+            restaurantUI?.hideDetail();
+            if (mapManager) mapManager.closeOverlay();
         }
     });
 
