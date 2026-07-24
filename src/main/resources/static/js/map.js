@@ -233,8 +233,25 @@ class KakaoMapManager {
 
     // ── Kakao Map Directions (길찾기) ──
     openDirections(name, lat, lng) {
-        const safeName = encodeURIComponent(name);
-        const url = `https://map.kakao.com/link/to/${safeName},${lat},${lng}`;
+        if (!lat || !lng) {
+            showToast('위치 좌표 정보가 없어 길찾기를 수행할 수 없습니다.', 'warning');
+            return;
+        }
+
+        // Clean any HTML escaping
+        const tempEl = document.createElement('div');
+        tempEl.innerHTML = name;
+        const rawName = tempEl.textContent || name;
+        const encodedName = encodeURIComponent(rawName);
+
+        // Universal Kakao Map Route Search URL (sX,sY = Start / eX,eY = End)
+        let url;
+        if (this.currentCoords && this.currentCoords.lat && this.currentCoords.lng) {
+            url = `https://map.kakao.com/?sX=${this.currentCoords.lng}&sY=${this.currentCoords.lat}&sName=${encodeURIComponent('내 위치')}&eX=${lng}&eY=${lat}&eName=${encodedName}`;
+        } else {
+            url = `https://map.kakao.com/?eName=${encodedName}&eX=${lng}&eY=${lat}`;
+        }
+
         window.open(url, '_blank');
     }
 
