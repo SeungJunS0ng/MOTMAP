@@ -97,34 +97,45 @@ class KakaoMapManager {
 
         showToast('현재 위치를 확인하는 중입니다...', 'info');
 
-        const geoOptions = {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
+        const onSuccess = (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            this.currentCoords = { lat, lng };
+
+            const locPosition = new kakao.maps.LatLng(lat, lng);
+            this.map.setCenter(locPosition);
+            this.map.setLevel(3);
+
+            // Update My Location Pulse Overlay
+            this.setMyLocationMarker(lat, lng);
+            showToast('현재 위치로 이동했습니다 📍', 'success');
+
+            // Recalculate card distances
+            if (restaurantUI) restaurantUI.updateCardDistances();
         };
 
+        // Try high accuracy first, fallback to standard accuracy for Desktop PC
         navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-                this.currentCoords = { lat, lng };
-
-                const locPosition = new kakao.maps.LatLng(lat, lng);
-                this.map.setCenter(locPosition);
-                this.map.setLevel(3);
-
-                // Update My Location Pulse Overlay
-                this.setMyLocationMarker(lat, lng);
-                showToast('현재 위치로 이동했습니다 📍', 'success');
-
-                // Recalculate card distances
-                if (restaurantUI) restaurantUI.updateCardDistances();
-            },
+            onSuccess,
             (err) => {
-                console.warn('Geolocation failed:', err);
-                showToast('위치 정보를 가져올 수 없습니다. 브라우저 위치 권한을 확인해 주세요.', 'error');
+                console.warn('High accuracy geolocation failed, trying standard accuracy...', err);
+                navigator.geolocation.getCurrentPosition(
+                    onSuccess,
+                    (err2) => {
+                        console.warn('Standard geolocation failed:', err2);
+                        // Fallback to map center
+                        const center = this.map.getCenter();
+                        const lat = center.getLat();
+                        const lng = center.getLng();
+                        this.currentCoords = { lat, lng };
+                        this.setMyLocationMarker(lat, lng);
+                        showToast('위치를 추정할 수 없어 지도 중심점으로 설정되었습니다 📍', 'warning');
+                        if (restaurantUI) restaurantUI.updateCardDistances();
+                    },
+                    { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
+                );
             },
-            geoOptions
+            { enableHighAccuracy: true, timeout: 4000, maximumAge: 0 }
         );
     }
 
