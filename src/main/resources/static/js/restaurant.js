@@ -71,11 +71,15 @@ class RestaurantUI {
         }
 
         if (mapManager) {
-            mapManager.searchByAddress(query, (res) => {
-                addressInput.value = res.address;
-                mapManager.setDraftMarker(res.lat, res.lng);
-                mapManager.selectedPosition = { lat: res.lat, lng: res.lng };
-                showToast('지도 위치가 지정되었습니다 📌', 'info');
+            mapManager.searchPlaceOrAddress(query, (res) => {
+                if (res) {
+                    addressInput.value = res.address;
+                    mapManager.setDraftMarker(res.lat, res.lng);
+                    mapManager.selectedPosition = { lat: res.lat, lng: res.lng };
+                    showToast(`"${res.placeName || res.address}" 위치가 지정되었습니다 📌`, 'info');
+                } else {
+                    showToast('해당 주소 또는 장소를 찾을 수 없습니다', 'warning');
+                }
             });
         }
     }
@@ -156,12 +160,27 @@ class RestaurantUI {
 
         try {
             this.showSkeleton();
-            if (mapManager) mapManager.searchByAddress(query, () => {});
             const results = await apiService.searchRestaurants(query);
             this.currentRestaurants = results;
             this.renderRestaurantList(results);
-            if (mapManager) mapManager.updateMarkers(results, true);
-            showToast(`"${query}" 검색 결과 ${results.length}건`, 'info');
+
+            if (mapManager) {
+                mapManager.searchPlaceOrAddress(query, (location) => {
+                    if (results.length > 0) {
+                        mapManager.updateMarkers(results, true);
+                        showToast(`"${query}" 맛집 검색 결과 ${results.length}건`, 'info');
+                    } else if (location) {
+                        mapManager.clearMarkers();
+                        mapManager.setDraftMarker(location.lat, location.lng);
+                        mapManager.selectedPosition = { lat: location.lat, lng: location.lng };
+                        document.getElementById('restaurantAddress').value = location.address;
+                        showToast(`지도 위치가 "${location.placeName || query}"(으)로 이동했습니다. 클릭해서 새 맛집을 등록해보세요! 📌`, 'info');
+                    } else {
+                        mapManager.clearMarkers();
+                        showToast(`"${query}" 검색 결과가 없습니다`, 'warning');
+                    }
+                });
+            }
         } catch (error) {
             showToast('검색 중 오류가 발생했습니다', 'error');
         }

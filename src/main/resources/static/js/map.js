@@ -316,20 +316,47 @@ class KakaoMapManager {
         }
     }
 
-    // ── Search by Address ──
-    searchByAddress(address, callback) {
-        this.geocoder.addressSearch(address, (result, status) => {
-            if (status === kakao.maps.services.Status.OK) {
+    // ── Search Place or Address (Kakao Geocoder + Places Keyword Search) ──
+    searchPlaceOrAddress(keyword, callback) {
+        if (!keyword) return;
+
+        // 1. Try Geocoder Address Search
+        this.geocoder.addressSearch(keyword, (result, status) => {
+            if (status === kakao.maps.services.Status.OK && result.length > 0) {
                 const lat = parseFloat(result[0].y);
                 const lng = parseFloat(result[0].x);
                 const coords = new kakao.maps.LatLng(lat, lng);
                 this.map.setCenter(coords);
                 this.map.setLevel(3);
-                if (callback) callback({ lat, lng, address: result[0].address.address_name });
-            } else {
-                showToast('입력하신 주소를 찾을 수 없습니다', 'warning');
+                if (callback) callback({ lat, lng, address: result[0].address.address_name, placeName: keyword });
+                return;
             }
+
+            // 2. Fallback to Kakao Places Keyword Search for general buildings/landmarks/areas
+            if (!this.places) {
+                this.places = new kakao.maps.services.Places();
+            }
+
+            this.places.keywordSearch(keyword, (data, placeStatus) => {
+                if (placeStatus === kakao.maps.services.Status.OK && data.length > 0) {
+                    const firstPlace = data[0];
+                    const lat = parseFloat(firstPlace.y);
+                    const lng = parseFloat(firstPlace.x);
+                    const coords = new kakao.maps.LatLng(lat, lng);
+                    this.map.setCenter(coords);
+                    this.map.setLevel(3);
+                    const placeAddr = firstPlace.road_address_name || firstPlace.address_name || firstPlace.place_name;
+                    if (callback) callback({ lat, lng, address: placeAddr, placeName: firstPlace.place_name });
+                } else {
+                    if (callback) callback(null);
+                }
+            });
         });
+    }
+
+    // Keep backwards compatibility alias
+    searchByAddress(address, callback) {
+        this.searchPlaceOrAddress(address, callback);
     }
 }
 
