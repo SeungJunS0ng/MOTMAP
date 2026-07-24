@@ -77,13 +77,6 @@ public class RestaurantController {
         return ResponseEntity.ok(restaurants);
     }
 
-    @Operation(summary = "유저별 공유 맛집 조회", description = "특정 유저가 등록한 공유 맛집 목록을 조회합니다.")
-    @GetMapping("/user/{username}")
-    public ResponseEntity<List<RestaurantResponseDto>> getRestaurantsByUsername(@PathVariable String username) {
-        List<RestaurantResponseDto> restaurants = restaurantService.getRestaurantsByUsername(username);
-        return ResponseEntity.ok(restaurants);
-    }
-
     @Operation(summary = "평점별 맛집 조회", description = "특정 평점 이상의 맛집 목록을 조회합니다.")
     @GetMapping("/rating/{rating}")
     public ResponseEntity<List<RestaurantResponseDto>> getRestaurantsByRating(@PathVariable Integer rating) {

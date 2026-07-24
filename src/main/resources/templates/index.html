@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="MOTMAP - 카카오맵 기반 나만의 맛집 지도 서비스. 맛집을 저장하고 리뷰하세요.">
     <title>MOTMAP — 나만의 맛집 지도</title>
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#FF6B00">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="MOTMAP">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -31,10 +27,8 @@
                     <span class="avatar" id="userAvatar"></span>
                     <span id="usernameDisplay"></span>
                 </div>
-                <button class="btn btn-secondary" id="shareMapBtn"><span class="btn-icon">🔗</span><span class="btn-text"> 내 지도 공유</span></button>
-                <button class="btn btn-secondary hidden" id="pwaInstallBtn" style="background:linear-gradient(135deg, #FF6B00, #F59E0B); color:white; border:none;"><span class="btn-icon">📲</span><span class="btn-text"> 앱 설치</span></button>
                 <button class="icon-btn" id="themeToggle" title="테마 변경">🌙</button>
-                <button class="btn btn-primary hidden" id="loginHeaderBtn">로그인</button>
+                <button class="btn btn-primary hidden" id="loginHeaderBtn" style="padding:6px 14px; font-size:0.82rem;">로그인</button>
                 <button class="btn btn-logout hidden" id="logoutBtn">로그아웃</button>
             </div>
         </div>
@@ -51,11 +45,6 @@
 
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
-            <!-- Mobile Bottom Sheet Drag Handle -->
-            <div class="bottom-sheet-handle-area" id="bottomSheetHandle">
-                <div class="bottom-sheet-handle"></div>
-            </div>
-
             <!-- Search -->
             <div class="search-area">
                 <div class="search-bar">
@@ -159,15 +148,6 @@
 
             <!-- Restaurant List -->
             <div class="restaurant-list-section">
-                <!-- Share Banner -->
-                <div class="share-banner hidden" id="shareBannerContainer" style="background: linear-gradient(135deg, rgba(255, 107, 0, 0.12), rgba(59, 130, 246, 0.12)); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
-                    <div>
-                        <div style="font-weight:700; font-size:0.9rem; color:var(--text-primary);" id="shareBannerTitle">📌 [유저명]님의 맛집 지도</div>
-                        <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;" id="shareBannerSubtitle">큐레이션된 맛집 목록</div>
-                    </div>
-                    <button class="btn btn-secondary" id="resetShareViewBtn" style="padding:4px 10px; font-size:0.75rem; white-space:nowrap;">전체 보기 ✕</button>
-                </div>
-
                 <div class="list-header">
                     <h3>맛집 목록 <span class="count-badge" id="restaurantCount">0</span></h3>
                 </div>

@@ -217,15 +217,6 @@ public class RestaurantService {
                 .toList();
     }
 
-    // 유저별 맛집 목록 조회
-    @Transactional(readOnly = true)
-    public List<RestaurantResponseDto> getRestaurantsByUsername(String username) {
-        log.debug("유저별 맛집 목록 조회 - 유저: {}", username);
-        return restaurantRepository.findByUserUsername(username).stream()
-                .map(RestaurantResponseDto::from)
-                .toList();
-    }
-
     // 평점별 조회
     @Transactional(readOnly = true)
     public List<RestaurantResponseDto> getRestaurantsByRating(Integer rating) {

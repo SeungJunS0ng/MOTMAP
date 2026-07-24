@@ -293,75 +293,10 @@ function initApp() {
 }
 
 // ════════════════════════════════
-// PWA & SERVICE WORKER
+// DOM READY
 // ════════════════════════════════
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js').then(reg => {
-            console.log('✅ PWA ServiceWorker registered:', reg.scope);
-        }).catch(err => {
-            console.log('PWA ServiceWorker registration failed:', err);
-        });
-    });
-}
-
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    const pwaBtn = document.getElementById('pwaInstallBtn');
-    if (pwaBtn) pwaBtn.classList.remove('hidden');
-});
 
 document.addEventListener('DOMContentLoaded', () => {
-    // PWA install button listener
-    const pwaBtn = document.getElementById('pwaInstallBtn');
-    if (pwaBtn) {
-        pwaBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    showToast('MOTMAP 앱이 홈 화면에 설치되었습니다! 📲', 'success');
-                }
-                deferredPrompt = null;
-                pwaBtn.classList.add('hidden');
-            } else {
-                showToast('모바일 브라우저 메뉴 [홈 화면에 추가]를 눌러 앱으로 설치할 수 있습니다 📲', 'info');
-            }
-        });
-    // Bottom Sheet Drag Handle Interaction for Mobile
-    const bottomSheetHandle = document.getElementById('bottomSheetHandle');
-    const sidebar = document.getElementById('sidebar');
-    if (bottomSheetHandle && sidebar) {
-        let startY = 0;
-        let isDragging = false;
-
-        bottomSheetHandle.addEventListener('click', () => {
-            sidebar.classList.toggle('expanded');
-        });
-
-        bottomSheetHandle.addEventListener('touchstart', (e) => {
-            startY = e.touches[0].clientY;
-            isDragging = true;
-        }, { passive: true });
-
-        bottomSheetHandle.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            const currentY = e.touches[0].clientY;
-            const diffY = currentY - startY;
-            if (diffY < -25) {
-                sidebar.classList.add('expanded');
-            } else if (diffY > 25) {
-                sidebar.classList.remove('expanded');
-            }
-        }, { passive: true });
-
-        bottomSheetHandle.addEventListener('touchend', () => {
-            isDragging = false;
-        });
-    }
-
     // Theme
     initTheme();
 
@@ -484,10 +419,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (apiService.isLoggedIn()) {
         updateUserUI();
         hideAuthModal();
+        initApp();
     } else {
-        // Show auth modal for first time visitors
         showAuthModal();
     }
-    // Always initialize Kakao Map & restaurant list for instant live preview!
-    initApp();
 });

@@ -169,10 +169,6 @@ class ApiService {
     async getNearbyRestaurants(lat, lng, radius = 3) {
         return this.request(`${this.baseUrl}/nearby?latitude=${lat}&longitude=${lng}&radius=${radius}`);
     }
-
-    async getRestaurantsByUsername(username) {
-        return this.request(`${this.baseUrl}/user/${encodeURIComponent(username)}`);
-    }
 }
 
 // Global instance

@@ -93,36 +93,6 @@ class RestaurantUI {
             });
         }
 
-        // Share Map Link button
-        const shareMapBtn = document.getElementById('shareMapBtn');
-        if (shareMapBtn) {
-            shareMapBtn.addEventListener('click', () => {
-                const currentUser = apiService.getUsername();
-                if (!currentUser && isGuestMode) {
-                    showToast('지도를 공유하려면 로그인이 필요합니다 🔒', 'warning');
-                    showAuthModal();
-                    return;
-                }
-                const shareUrl = `${window.location.origin}/?user=${encodeURIComponent(currentUser || 'admin')}`;
-                if (navigator.clipboard) {
-                    navigator.clipboard.writeText(shareUrl);
-                    showToast(`🔗 나만의 맛집 지도 공유 링크가 클립보드에 복사되었습니다!\n(${shareUrl})`, 'success');
-                } else {
-                    prompt('아래 공유 링크를 복사하세요:', shareUrl);
-                }
-            });
-        }
-
-        // Reset Share View button
-        const resetShareViewBtn = document.getElementById('resetShareViewBtn');
-        if (resetShareViewBtn) {
-            resetShareViewBtn.addEventListener('click', () => {
-                window.history.pushState({}, '', '/');
-                document.getElementById('shareBannerContainer')?.classList.add('hidden');
-                this.loadAndRenderRestaurants();
-            });
-        }
-
         // Photo upload / URL listeners
         const uploadFileBtn = document.getElementById('uploadFileBtn');
         const restaurantFile = document.getElementById('restaurantFile');
@@ -409,32 +379,6 @@ class RestaurantUI {
     // ════════════════════════════════
 
     async loadAndRenderRestaurants() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const sharedUser = urlParams.get('user');
-
-        if (sharedUser) {
-            try {
-                this.showSkeleton();
-                const sharedRestaurants = await apiService.getRestaurantsByUsername(sharedUser);
-                this.currentRestaurants = sharedRestaurants;
-                this.renderRestaurantList(sharedRestaurants);
-                if (mapManager) mapManager.updateMarkers(sharedRestaurants, true);
-
-                const banner = document.getElementById('shareBannerContainer');
-                const title = document.getElementById('shareBannerTitle');
-                const sub = document.getElementById('shareBannerSubtitle');
-                if (banner && title && sub) {
-                    title.textContent = `📌 [${escapeHtml(sharedUser)}]님의 큐레이션 맛집 지도`;
-                    sub.textContent = `공유된 큐레이션 맛집 총 ${sharedRestaurants.length}곳`;
-                    banner.classList.remove('hidden');
-                }
-                showToast(`[${sharedUser}]님의 큐레이션 맛집 지도(${sharedRestaurants.length}곳)로 접속했습니다! 🔗`, 'info');
-                return;
-            } catch (err) {
-                console.warn('Failed to load shared user map:', err);
-            }
-        }
-
         try {
             this.showSkeleton();
             const restaurants = await apiService.getAllRestaurants();
