@@ -985,6 +985,8 @@ h1, h2, h3, h4 { font-weight: 700; line-height: 1.2; }
     padding: 32px;
     animation: modalSlideUp var(--duration-slow) var(--ease-spring);
     border: 1px solid var(--border-light);
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 @keyframes modalSlideUp {
