@@ -140,9 +140,14 @@ class KakaoMapManager {
             return;
         }
 
-        showToast('현재 위치를 확인하는 중입니다...', 'info');
+        const loadingToast = showToast('현재 위치를 확인하는 중입니다... (클릭하여 닫기)', 'info', 0);
+
+        const dismissLoading = () => {
+            if (loadingToast) removeToast(loadingToast);
+        };
 
         const onSuccess = (position) => {
+            dismissLoading();
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
             this.currentCoords = { lat, lng };
@@ -161,32 +166,31 @@ class KakaoMapManager {
         };
 
         const onError = (err) => {
+            dismissLoading();
             console.warn('Geolocation error:', err);
             let message = '위치 정보를 가져올 수 없습니다.';
 
-            if (err.code === 1) { // PERMISSION_DENIED
+            if (err && err.code === 1) { // PERMISSION_DENIED
                 message = '브라우저 위치 권한이 차단되어 있습니다. (주소창 🔒 클릭 → 위치 허용)';
-            } else if (err.code === 2) { // POSITION_UNAVAILABLE
+            } else if (err && err.code === 2) { // POSITION_UNAVAILABLE
                 message = '데스크톱 PC 네트워크 환경으로 위치 센서를 찾을 수 없습니다.';
-            } else if (err.code === 3) { // TIMEOUT
+            } else if (err && err.code === 3) { // TIMEOUT
                 message = '위치 탐색 시간이 초과되었습니다.';
             }
 
             this.promptCustomLocation(message);
         };
 
-        // Try high accuracy first, fallback to standard accuracy, then custom prompt
-        navigator.geolocation.getCurrentPosition(
-            onSuccess,
-            () => {
-                navigator.geolocation.getCurrentPosition(
-                    onSuccess,
-                    onError,
-                    { enableHighAccuracy: false, timeout: 3500, maximumAge: 60000 }
-                );
-            },
-            { enableHighAccuracy: true, timeout: 3000, maximumAge: 0 }
-        );
+        // Strict 2.5s fast timeout for Desktop PC
+        try {
+            navigator.geolocation.getCurrentPosition(
+                onSuccess,
+                onError,
+                { enableHighAccuracy: false, timeout: 2500, maximumAge: 300000 }
+            );
+        } catch (e) {
+            onError(e);
+        }
     }
 
     // ── Custom Location Prompt for PC / Permission Denied ──

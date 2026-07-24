@@ -19,7 +19,7 @@ function escapeHtml(str) {
         .replace(/'/g, '&#039;');
 }
 
-function showToast(message, type = 'info') {
+function showToast(message, type = 'info', duration = 3500) {
     const container = document.getElementById('toastContainer');
     const icons = {
         success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️'
@@ -27,18 +27,37 @@ function showToast(message, type = 'info') {
 
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
+    toast.style.cursor = 'pointer';
+    toast.title = '클릭하여 닫기';
     toast.innerHTML = `
         <span class="toast-icon">${icons[type] || icons.info}</span>
-        <span>${message}</span>
+        <span style="flex:1; line-height:1.35;">${escapeHtml(message)}</span>
+        <span style="font-size:0.75rem; opacity:0.6; padding-left:8px;">✕</span>
     `;
+
+    const removeSelf = () => {
+        if (!toast.classList.contains('toast-out')) {
+            toast.classList.add('toast-out');
+            setTimeout(() => toast.remove(), 250);
+        }
+    };
+
+    toast.addEventListener('click', removeSelf);
 
     container.appendChild(toast);
 
-    // Auto remove
-    setTimeout(() => {
-        toast.classList.add('toast-out');
-        setTimeout(() => toast.remove(), 300);
-    }, 3500);
+    if (duration > 0) {
+        setTimeout(removeSelf, duration);
+    }
+
+    return toast;
+}
+
+function removeToast(toastEl) {
+    if (toastEl && toastEl.parentNode) {
+        toastEl.classList.add('toast-out');
+        setTimeout(() => toastEl.remove(), 250);
+    }
 }
 
 // ════════════════════════════════
