@@ -80,14 +80,20 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/**",           // 로그인, 회원가입
                                 "/",                      // 메인 페이지
+                                "/manifest.json",         // PWA Manifest
+                                "/service-worker.js",     // PWA Service Worker
                                 "/css/**",                // 정적 리소스
                                 "/js/**",
+                                "/images/**",
                                 "/favicon.ico",           // 파비콘
                                 "/swagger-ui/**",         // Swagger UI
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
                                 "/api-docs/**"
                         ).permitAll()
+
+                        // GET 요청 맛집 조회는 둘러보기/공유링크 허용
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/restaurants/**").permitAll()
 
                         // 관리자만 접근 가능
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
