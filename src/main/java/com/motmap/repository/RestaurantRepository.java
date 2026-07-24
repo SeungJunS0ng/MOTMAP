@@ -15,6 +15,9 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     // 카테고리별 조회
     List<Restaurant> findByCategory(Category category);
 
+    // 유저별 조회
+    List<Restaurant> findByUserUsername(String username);
+
     // 평점별 조회
     List<Restaurant> findByRating(Integer rating);
 

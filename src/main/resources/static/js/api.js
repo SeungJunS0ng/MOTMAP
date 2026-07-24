@@ -169,6 +169,32 @@ class ApiService {
     async getNearbyRestaurants(lat, lng, radius = 3) {
         return this.request(`${this.baseUrl}/nearby?latitude=${lat}&longitude=${lng}&radius=${radius}`);
     }
+
+    async getRestaurantsByUsername(username) {
+        return this.request(`${this.baseUrl}/user/${encodeURIComponent(username)}`);
+    }
+
+    async kakaoLogin(kakaoData) {
+        const res = await this.request(`${this.authUrl}/kakao`, {
+            method: 'POST',
+            body: JSON.stringify(kakaoData)
+        });
+        if (res.token) {
+            localStorage.setItem('motmap_token', res.token);
+            localStorage.setItem('motmap_username', res.username);
+            localStorage.setItem('motmap_nickname', res.nickname);
+        }
+        return res;
+    }
+
+    async getAiCourse(restaurantId = null, lat = null, lng = null) {
+        let query = [];
+        if (restaurantId) query.push(`restaurantId=${restaurantId}`);
+        if (lat) query.push(`latitude=${lat}`);
+        if (lng) query.push(`longitude=${lng}`);
+        const qStr = query.length > 0 ? `?${query.join('&')}` : '';
+        return this.request(`${this.baseUrl}/ai-course${qStr}`);
+    }
 }
 
 // Global instance

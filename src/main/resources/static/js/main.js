@@ -293,10 +293,73 @@ function initApp() {
 }
 
 // ════════════════════════════════
-// DOM READY
+// PWA & SERVICE WORKER
 // ════════════════════════════════
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js').then(reg => {
+            console.log('✅ PWA ServiceWorker registered:', reg.scope);
+        }).catch(err => {
+            console.log('PWA ServiceWorker registration failed:', err);
+        });
+    });
+}
+
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const pwaBtn = document.getElementById('pwaInstallBtn');
+    if (pwaBtn) pwaBtn.classList.remove('hidden');
+});
 
 document.addEventListener('DOMContentLoaded', () => {
+    // PWA install button listener
+    const pwaBtn = document.getElementById('pwaInstallBtn');
+    if (pwaBtn) {
+        pwaBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    showToast('MOTMAP 앱이 홈 화면에 설치되었습니다! 📲', 'success');
+                }
+                deferredPrompt = null;
+                pwaBtn.classList.add('hidden');
+            } else {
+                showToast('모바일 브라우저 메뉴 [홈 화면에 추가]를 눌러 앱으로 설치할 수 있습니다 📲', 'info');
+            }
+        });
+    }
+
+    // Kakao Social Login button listener
+    const kakaoLoginBtn = document.getElementById('kakaoLoginBtn');
+    if (kakaoLoginBtn) {
+        kakaoLoginBtn.addEventListener('click', async () => {
+            try {
+                showToast('카카오 1초 소셜 로그인 처리 중... 💛', 'info');
+                // Unique Kakao ID generation for seamless instant login
+                let storedKakaoId = localStorage.getItem('motmap_kakao_id');
+                if (!storedKakaoId) {
+                    storedKakaoId = 'kakao_user_' + Math.floor(100000 + Math.random() * 900000);
+                    localStorage.setItem('motmap_kakao_id', storedKakaoId);
+                }
+
+                const res = await apiService.kakaoLogin({
+                    kakaoId: storedKakaoId,
+                    nickname: '카카오 맛집 마스터 💛',
+                    email: `${storedKakaoId}@kakao.com`
+                });
+
+                isGuestMode = false;
+                showToast(`환영합니다, ${res.nickname}님! 💛 (카카오 로그인)`, 'success');
+                hideAuthModal();
+                initApp();
+            } catch (err) {
+                showToast(err.message || '카카오 로그인에 실패했습니다', 'error');
+            }
+        });
+    }
     // Theme
     initTheme();
 

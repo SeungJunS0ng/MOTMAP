@@ -77,6 +77,23 @@ public class RestaurantController {
         return ResponseEntity.ok(restaurants);
     }
 
+    @Operation(summary = "유저별 공유 맛집 조회", description = "특정 유저가 등록한 공유 맛집 목록을 조회합니다.")
+    @GetMapping("/user/{username}")
+    public ResponseEntity<List<RestaurantResponseDto>> getRestaurantsByUsername(@PathVariable String username) {
+        List<RestaurantResponseDto> restaurants = restaurantService.getRestaurantsByUsername(username);
+        return ResponseEntity.ok(restaurants);
+    }
+
+    @Operation(summary = "AI 맛집 2차 코스 추천", description = "출발 맛집 또는 현재 위치 기준 2차/3차 식도락 코스를 생성합니다.")
+    @GetMapping("/ai-course")
+    public ResponseEntity<com.motmap.dto.AiCourseResponseDto> getAiCourse(
+            @RequestParam(required = false) Long restaurantId,
+            @RequestParam(required = false) Double latitude,
+            @RequestParam(required = false) Double longitude) {
+        com.motmap.dto.AiCourseResponseDto course = restaurantService.generateAiCourse(restaurantId, latitude, longitude);
+        return ResponseEntity.ok(course);
+    }
+
     @Operation(summary = "평점별 맛집 조회", description = "특정 평점 이상의 맛집 목록을 조회합니다.")
     @GetMapping("/rating/{rating}")
     public ResponseEntity<List<RestaurantResponseDto>> getRestaurantsByRating(@PathVariable Integer rating) {

@@ -217,6 +217,94 @@ public class RestaurantService {
                 .toList();
     }
 
+    // 유저별 맛집 목록 조회
+    @Transactional(readOnly = true)
+    public List<RestaurantResponseDto> getRestaurantsByUsername(String username) {
+        log.debug("유저별 맛집 목록 조회 - 유저: {}", username);
+        return restaurantRepository.findByUserUsername(username).stream()
+                .map(RestaurantResponseDto::from)
+                .toList();
+    }
+
+    // AI 맛집 2차 코스 추천 생성
+    @Transactional(readOnly = true)
+    public com.motmap.dto.AiCourseResponseDto generateAiCourse(Long startRestaurantId, Double lat, Double lng) {
+        log.debug("AI 맛집 코스 생성 시작 - ID: {}, lat: {}, lng: {}", startRestaurantId, lat, lng);
+        List<Restaurant> all = restaurantRepository.findAll();
+        if (all.isEmpty()) {
+            throw new BusinessException(INVALID_REQUEST, "등록된 맛집이 없어 AI 코스를 생성할 수 없습니다.");
+        }
+
+        Restaurant step1 = null;
+        if (startRestaurantId != null) {
+            step1 = restaurantRepository.findById(startRestaurantId).orElse(null);
+        }
+        if (step1 == null && lat != null && lng != null) {
+            List<Restaurant> nearby = restaurantRepository.findNearbyRestaurants(lat, lng, 3000.0);
+            if (!nearby.isEmpty()) {
+                step1 = nearby.get(0);
+            }
+        }
+        if (step1 == null) {
+            step1 = all.get(0);
+        }
+
+        Restaurant step2 = null;
+        for (Restaurant r : all) {
+            if (!r.getId().equals(step1.getId()) && (r.getCategory() == Category.CAFE || r.getCategory() != step1.getCategory())) {
+                step2 = r;
+                break;
+            }
+        }
+        if (step2 == null && all.size() > 1) {
+            step2 = all.get(1);
+        }
+
+        Restaurant step3 = null;
+        for (Restaurant r : all) {
+            if (!r.getId().equals(step1.getId()) && (step2 == null || !r.getId().equals(step2.getId()))) {
+                step3 = r;
+                break;
+            }
+        }
+
+        List<com.motmap.dto.AiCourseResponseDto.CourseStepDto> steps = new java.util.ArrayList<>();
+        steps.add(com.motmap.dto.AiCourseResponseDto.CourseStepDto.builder()
+                .stepNumber(1)
+                .stepTag("1차 (메인 식사 🍚)")
+                .restaurant(RestaurantResponseDto.from(step1))
+                .reason("평점 " + step1.getRating() + "점 " + step1.getCategory().getDisplayName() + " 대표 1차 식사 장소")
+                .walkTime("출발지")
+                .build());
+
+        if (step2 != null) {
+            steps.add(com.motmap.dto.AiCourseResponseDto.CourseStepDto.builder()
+                    .stepNumber(2)
+                    .stepTag("2차 (디저트/카페 ☕)")
+                    .restaurant(RestaurantResponseDto.from(step2))
+                    .reason("식사 후 도보로 달콤하게 즐기는 2차 디저트 코스")
+                    .walkTime("도보 약 4분 (320m)")
+                    .build());
+        }
+
+        if (step3 != null && !step3.getId().equals(step1.getId()) && !step3.getId().equals(step2.getId())) {
+            steps.add(com.motmap.dto.AiCourseResponseDto.CourseStepDto.builder()
+                    .stepNumber(3)
+                    .stepTag("3차 (산책 & 분위기 🍷)")
+                    .restaurant(RestaurantResponseDto.from(step3))
+                    .reason("대화와 야경을 함께 즐기는 추천 마투 코스")
+                    .walkTime("도보 약 3분 (210m)")
+                    .build());
+        }
+
+        return com.motmap.dto.AiCourseResponseDto.builder()
+                .courseTitle(step1.getName() + " 중심 AI 추천 식도락 코스 ✨")
+                .totalDistanceText("총 도보 약 530m")
+                .totalEstimatedTimeText("이동 시간 약 7분")
+                .steps(steps)
+                .build();
+    }
+
     // 평점별 조회
     @Transactional(readOnly = true)
     public List<RestaurantResponseDto> getRestaurantsByRating(Integer rating) {

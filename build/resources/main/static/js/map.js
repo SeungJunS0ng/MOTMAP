@@ -1,214 +1,545 @@
-// 카카오맵 관리 모듈 (Spring Boot 연동 버전)
+// ═══════════════════════════════════════════
+// MOTMAP — Kakao Map Manager
+// 카카오맵, 커스텀 오버레이, 이모지 마커, 내 위치, 드래프트 핀, 마커 클러스터러, 반경 원, 길찾기
+// ═══════════════════════════════════════════
+
 class KakaoMapManager {
     constructor() {
         this.map = null;
         this.markers = [];
-        this.infoWindows = [];
+        this.overlays = [];
         this.geocoder = null;
+        this.places = null;
+        this.clusterer = null;
+        this.radiusCircle = null;
         this.selectedPosition = null;
+        this.currentOverlay = null;
+        this.myLocationOverlay = null;
+        this.draftOverlay = null;
+        this.currentCoords = null; // { lat, lng }
         this.init();
     }
 
     init() {
-        // 카카오맵 초기화
         const container = document.getElementById('map');
         const options = {
-            center: new kakao.maps.LatLng(37.566826, 126.9786567), // 서울시청 좌표
-            level: 3
+            center: new kakao.maps.LatLng(37.566826, 126.9786567),
+            level: 4
         };
 
         this.map = new kakao.maps.Map(container, options);
         this.geocoder = new kakao.maps.services.Geocoder();
 
-        // 지도 클릭 이벤트 등록
+        // Kakao Map Controls (MapType & Zoom)
+        const mapTypeControl = new kakao.maps.MapTypeControl();
+        this.map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+
+        const zoomControl = new kakao.maps.ZoomControl();
+        this.map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+
+        // Marker Clusterer
+        if (kakao.maps.MarkerClusterer) {
+            this.clusterer = new kakao.maps.MarkerClusterer({
+                map: this.map,
+                averageCenter: true,
+                minLevel: 6
+            });
+        }
+
+        // Map click listener
         kakao.maps.event.addListener(this.map, 'click', (mouseEvent) => {
+            this.closeOverlay();
             this.handleMapClick(mouseEvent);
         });
 
-        // 현재 위치로 이동 버튼 추가
-        this.addCurrentLocationButton();
-    }
-
-    // 지도 클릭 처리
-    handleMapClick(mouseEvent) {
-        const latlng = mouseEvent.latLng;
-        this.selectedPosition = {
-            lat: latlng.getLat(),
-            lng: latlng.getLng()
-        };
-
-        // 주소 검색
-        this.geocoder.coord2Address(latlng.getLng(), latlng.getLat(), (result, status) => {
-            if (status === kakao.maps.services.Status.OK) {
-                const address = result[0].address.address_name;
-
-                // 맛집 추가 폼 표시
-                document.getElementById('restaurantAddress').value = address;
-                document.querySelector('.add-restaurant-form').style.display = 'block';
-                document.querySelector('.add-restaurant-form').scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    }
-
-    // 현재 위치 버튼 추가
-    addCurrentLocationButton() {
-        const locationBtn = document.createElement('button');
-        locationBtn.innerHTML = '📍 현재 위치';
-        locationBtn.style.cssText = `
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 1000;
-            background: white;
-            border: 2px solid #667eea;
-            color: #667eea;
-            padding: 8px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-        `;
-
-        locationBtn.addEventListener('click', () => {
+        // Current location button
+        document.getElementById('currentLocationBtn').addEventListener('click', () => {
             this.getCurrentLocation();
         });
 
-        document.querySelector('.map-section').appendChild(locationBtn);
+        // Restore saved location after init
+        setTimeout(() => {
+            this.loadSavedLocation();
+        }, 400);
     }
 
-    // 현재 위치 가져오기
-    getCurrentLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    const moveLatLng = new kakao.maps.LatLng(lat, lng);
-
-                    this.map.setCenter(moveLatLng);
-                    this.map.setLevel(3);
-                },
-                (error) => {
-                    alert('현재 위치를 가져올 수 없습니다.');
+    // ── LocalStorage Location Persistence ──
+    loadSavedLocation() {
+        try {
+            const saved = localStorage.getItem('motmap_my_location');
+            if (saved) {
+                const { lat, lng, name } = JSON.parse(saved);
+                if (lat && lng) {
+                    this.currentCoords = { lat, lng };
+                    const coords = new kakao.maps.LatLng(lat, lng);
+                    this.map.setCenter(coords);
+                    this.setMyLocationMarker(lat, lng);
+                    this.drawRadiusCircle(lat, lng, 1000);
+                    showToast(`저장된 기준 위치("${name || '내 위치'}")로 설정되었습니다 📍`, 'info');
+                    if (restaurantUI) restaurantUI.updateCardDistances();
+                    return true;
                 }
-            );
-        } else {
-            alert('이 브라우저는 위치 서비스를 지원하지 않습니다.');
+            }
+        } catch (e) {
+            console.warn('Failed to load saved location:', e);
+        }
+        return false;
+    }
+
+    saveMyLocation(lat, lng, name) {
+        try {
+            localStorage.setItem('motmap_my_location', JSON.stringify({ lat, lng, name }));
+        } catch (e) {
+            console.warn('Failed to save location:', e);
         }
     }
 
-    // 마커 추가 (Spring Boot 데이터 구조에 맞춤)
+    promptSetMyLocation() {
+        const userPlace = prompt("현재 계신 실제 동네나 장소명(예: '성수동', '강남역', '명동', '송파구')을 입력하세요:", "명동");
+        if (userPlace && userPlace.trim()) {
+            const query = userPlace.trim();
+            this.searchPlaceOrAddress(query, (res) => {
+                if (res) {
+                    const lat = res.lat;
+                    const lng = res.lng;
+                    const name = res.placeName || query;
+                    this.saveMyLocation(lat, lng, name);
+                    const coords = new kakao.maps.LatLng(lat, lng);
+                    this.map.setCenter(coords);
+                    this.map.setLevel(4);
+                    this.applyMyLocation(lat, lng, `내 위치가 "${name}"(으)로 설정 및 저장되었습니다 📍`);
+                } else {
+                    showToast(`"${query}" 장소를 찾을 수 없습니다.`, 'warning');
+                }
+            });
+        }
+    }
+
+    // ── Map Click → Show Draft Pin & Form ──
+    handleMapClick(mouseEvent) {
+        const latlng = mouseEvent.latLng;
+        const lat = latlng.getLat();
+        const lng = latlng.getLng();
+
+        this.selectedPosition = { lat, lng };
+        this.setDraftMarker(lat, lng);
+
+        this.geocoder.coord2Address(lng, lat, (result, status) => {
+            if (status === kakao.maps.services.Status.OK) {
+                const address = result[0].address.address_name;
+                document.getElementById('restaurantAddress').value = address;
+            }
+        });
+
+        // Show form & toast guidance
+        const formEl = document.getElementById('restaurantForm');
+        formEl.classList.remove('hidden');
+        formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        showToast('선택한 위치의 주소가 채워졌습니다 📍 맛집 정보를 입력 후 저장해 주세요!', 'info');
+    }
+
+    // ── Set Draft Marker (📌) ──
+    setDraftMarker(lat, lng) {
+        this.removeDraftMarker();
+
+        const position = new kakao.maps.LatLng(lat, lng);
+        const draftEl = document.createElement('div');
+        draftEl.className = 'draft-pin-bounce';
+        draftEl.innerHTML = '<span>📌</span>';
+        draftEl.title = '등록할 위치';
+
+        this.draftOverlay = new kakao.maps.CustomOverlay({
+            position: position,
+            content: draftEl,
+            yAnchor: 1,
+            zIndex: 15
+        });
+
+        this.draftOverlay.setMap(this.map);
+    }
+
+    removeDraftMarker() {
+        if (this.draftOverlay) {
+            this.draftOverlay.setMap(null);
+            this.draftOverlay = null;
+        }
+    }
+
+    // ── Draw Radius Circle (kakao.maps.Circle) ──
+    drawRadiusCircle(lat, lng, radiusMeters = 1000) {
+        this.removeRadiusCircle();
+
+        this.radiusCircle = new kakao.maps.Circle({
+            center: new kakao.maps.LatLng(lat, lng),
+            radius: radiusMeters,
+            strokeWeight: 1.5,
+            strokeColor: '#3B82F6',
+            strokeOpacity: 0.65,
+            strokeStyle: 'dashed',
+            fillColor: '#3B82F6',
+            fillOpacity: 0.02 // Extremely subtle, no map blue shading
+        });
+
+        this.radiusCircle.setMap(this.map);
+    }
+
+    removeRadiusCircle() {
+        if (this.radiusCircle) {
+            this.radiusCircle.setMap(null);
+            this.radiusCircle = null;
+        }
+    }
+
+    // ── Current Location (Seamless Auto Fallback) ──
+    getCurrentLocation() {
+        if (!navigator.geolocation) {
+            this.setCenterAsMyLocation();
+            return;
+        }
+
+        const loadingToast = showToast('현재 위치를 확인하는 중입니다...', 'info', 0);
+
+        const dismissLoading = () => {
+            if (loadingToast) removeToast(loadingToast);
+        };
+
+        const onSuccess = (position) => {
+            dismissLoading();
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+
+            const locPosition = new kakao.maps.LatLng(lat, lng);
+            this.map.setCenter(locPosition);
+            this.map.setLevel(4);
+
+            this.applyMyLocation(lat, lng, '현재 위치로 이동했습니다 (반경 1km 표시) 📍');
+        };
+
+        const onError = (err) => {
+            dismissLoading();
+            console.warn('Geolocation unavailable, defaulting to map center:', err);
+            this.setCenterAsMyLocation();
+        };
+
+        // Fast 2-second attempt for seamless experience
+        try {
+            navigator.geolocation.getCurrentPosition(
+                onSuccess,
+                onError,
+                { enableHighAccuracy: false, timeout: 2000, maximumAge: 300000 }
+            );
+        } catch (e) {
+            onError(e);
+        }
+    }
+
+    // ── Seamless Map Center Fallback ──
+    setCenterAsMyLocation() {
+        const center = this.map.getCenter();
+        const lat = center.getLat();
+        const lng = center.getLng();
+        this.applyMyLocation(lat, lng, '지도 중심점이 기준 위치로 설정되었습니다 📍');
+    }
+
+    applyMyLocation(lat, lng, toastMessage) {
+        this.currentCoords = { lat, lng };
+        this.setMyLocationMarker(lat, lng);
+        this.drawRadiusCircle(lat, lng, 1000);
+        showToast(toastMessage, 'info');
+        if (restaurantUI) restaurantUI.updateCardDistances();
+    }
+
+    // ── Set My Location Marker ──
+    setMyLocationMarker(lat, lng) {
+        if (this.myLocationOverlay) {
+            this.myLocationOverlay.setMap(null);
+        }
+
+        const position = new kakao.maps.LatLng(lat, lng);
+        const el = document.createElement('div');
+        el.className = 'my-location-pulse-marker';
+        el.title = '내 위치';
+
+        this.myLocationOverlay = new kakao.maps.CustomOverlay({
+            position: position,
+            content: el,
+            yAnchor: 0.5,
+            xAnchor: 0.5,
+            zIndex: 20
+        });
+
+        this.myLocationOverlay.setMap(this.map);
+    }
+
+    // ── Category Emoji ──
+    getCategoryEmoji(category) {
+        const map = {
+            'KOREAN': '🍚', 'CHINESE': '🥟', 'JAPANESE': '🍣',
+            'WESTERN': '🍝', 'CAFE': '☕', 'ETC': '🍴', 'OTHER': '🍴'
+        };
+        return map[category] || '🍴';
+    }
+
+    getCategoryLabel(category) {
+        const map = {
+            'KOREAN': '한식', 'CHINESE': '중식', 'JAPANESE': '일식',
+            'WESTERN': '양식', 'CAFE': '카페', 'ETC': '기타', 'OTHER': '기타'
+        };
+        return map[category] || category;
+    }
+
+    // ── Kakao Map Directions (길찾기) ──
+    openDirections(name, lat, lng) {
+        if (!lat || !lng) {
+            showToast('위치 좌표 정보가 없어 길찾기를 수행할 수 없습니다.', 'warning');
+            return;
+        }
+
+        // Clean any HTML escaping
+        const tempEl = document.createElement('div');
+        tempEl.innerHTML = name;
+        const rawName = tempEl.textContent || name;
+        const encodedName = encodeURIComponent(rawName);
+
+        // Universal Kakao Map Route Search URL (sX,sY = Start / eX,eY = End)
+        let url;
+        if (this.currentCoords && this.currentCoords.lat && this.currentCoords.lng) {
+            url = `https://map.kakao.com/?sX=${this.currentCoords.lng}&sY=${this.currentCoords.lat}&sName=${encodeURIComponent('내 위치')}&eX=${lng}&eY=${lat}&eName=${encodedName}`;
+        } else {
+            url = `https://map.kakao.com/?eName=${encodedName}&eX=${lng}&eY=${lat}`;
+        }
+
+        window.open(url, '_blank');
+    }
+
+    // ── Add Marker ──
     addMarker(restaurant) {
         const position = new kakao.maps.LatLng(restaurant.latitude, restaurant.longitude);
+        const emoji = this.getCategoryEmoji(restaurant.category);
 
-        const marker = new kakao.maps.Marker({
+        const markerContent = document.createElement('div');
+        markerContent.innerHTML = `
+            <div style="
+                width:36px; height:36px;
+                background:white;
+                border-radius:50% 50% 50% 0;
+                transform:rotate(-45deg);
+                display:flex; align-items:center; justify-content:center;
+                box-shadow:0 3px 10px rgba(0,0,0,0.2);
+                border:2px solid white;
+                cursor:pointer;
+                transition: transform 0.15s ease;
+            ">
+                <span style="transform:rotate(45deg); font-size:16px; line-height:1;">${emoji}</span>
+            </div>
+        `;
+
+        const markerOverlay = new kakao.maps.CustomOverlay({
             position: position,
-            title: restaurant.name
+            content: markerContent,
+            clickable: true,
+            yAnchor: 1,
+            zIndex: 1
+        });
+        markerOverlay.setMap(this.map);
+
+        const starsHtml = Array.from({length: 5}, (_, i) =>
+            `<span class="star-icon ${i < restaurant.rating ? 'filled' : ''}" style="font-size:0.78rem; color:${i < restaurant.rating ? '#F59E0B' : '#CBD5E1'}">★</span>`
+        ).join('');
+
+        const escapedName = escapeHtml(restaurant.name).replace(/'/g, "\\'");
+
+        const categoryTag = `<span class="category-tag ${restaurant.category}">${this.getCategoryLabel(restaurant.category)}</span>`;
+
+        const hasOverlayImage = restaurant.imageUrl && restaurant.imageUrl.trim();
+        const overlayImageHtml = hasOverlayImage ? `
+            <div style="width:calc(100% + 32px); margin:-16px -16px 10px -16px; height:110px; border-radius:16px 16px 0 0; overflow:hidden; position:relative; background:var(--bg-tertiary);">
+                <img src="${escapeHtml(restaurant.imageUrl)}" alt="${escapeHtml(restaurant.name)}" style="width:100%; height:100%; object-fit:cover;" />
+            </div>
+        ` : '';
+
+        const overlayContent = document.createElement('div');
+        overlayContent.className = 'custom-overlay';
+        overlayContent.innerHTML = `
+            ${overlayImageHtml}
+            <button class="overlay-close">✕</button>
+            <div class="overlay-name">${emoji} ${escapeHtml(restaurant.name)}</div>
+            <div class="overlay-meta" style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+                ${categoryTag}
+                <div class="overlay-stars" style="display:inline-flex; align-items:center;">${starsHtml}</div>
+            </div>
+            <div class="overlay-address">📍 ${escapeHtml(restaurant.address) || '주소 정보 없음'}</div>
+            ${restaurant.review ? `<div class="overlay-review">"${escapeHtml(restaurant.review)}"</div>` : ''}
+            <div class="overlay-actions" style="display:flex; gap:6px; margin-top:10px;">
+                <button class="overlay-btn overlay-btn-detail" style="background: linear-gradient(135deg, #4F46E5, #3B82F6); color: white;">상세보기</button>
+                <button class="overlay-btn overlay-btn-navi" style="background: linear-gradient(135deg, #10B981, #059669); color: white;">🧭 길찾기</button>
+            </div>
+        `;
+
+        // Direct DOM event listeners for 100% reliable execution inside Kakao Overlay
+        const closeBtn = overlayContent.querySelector('.overlay-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                this.closeOverlay();
+            });
+        }
+
+        const detailBtn = overlayContent.querySelector('.overlay-btn-detail');
+        if (detailBtn) {
+            detailBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                if (restaurantUI) restaurantUI.showDetail(restaurant.id);
+            });
+        }
+
+        const naviBtn = overlayContent.querySelector('.overlay-btn-navi');
+        if (naviBtn) {
+            naviBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                this.openDirections(restaurant.name, restaurant.latitude, restaurant.longitude);
+            });
+        }
+
+        const infoOverlay = new kakao.maps.CustomOverlay({
+            position: position,
+            content: overlayContent,
+            clickable: true, // CRITICAL FOR KAKAO CUSTOM OVERLAYS
+            yAnchor: 1.28,
+            zIndex: 25
         });
 
-        marker.setMap(this.map);
-
-        // 인포윈도우 생성
-        const infowindow = new kakao.maps.InfoWindow({
-            content: this.createInfoWindowContent(restaurant)
-        });
-
-        // 마커 클릭 시 인포윈도우 표시
-        kakao.maps.event.addListener(marker, 'click', () => {
-            this.closeAllInfoWindows();
-            infowindow.open(this.map, marker);
+        markerContent.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.closeOverlay();
+            this.currentOverlay = infoOverlay;
+            infoOverlay.setMap(this.map);
+            markerContent.querySelector('div').style.transform = 'rotate(-45deg) scale(1.15)';
         });
 
         this.markers.push({
-            marker: marker,
-            restaurant: restaurant,
-            infoWindow: infowindow
+            markerOverlay,
+            infoOverlay,
+            restaurant,
+            markerContent,
+            position
         });
     }
 
-    // 인포윈도우 내용 생성 (Spring Boot 데이터 구조에 맞춤)
-    createInfoWindowContent(restaurant) {
-        const stars = '★'.repeat(restaurant.rating) + '☆'.repeat(5 - restaurant.rating);
-        return `
-            <div style="padding: 10px; min-width: 200px;">
-                <strong style="font-size: 14px;">${restaurant.name}</strong><br>
-                <span style="background: #667eea; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px;">
-                    ${restaurant.categoryDisplayName}
-                </span><br>
-                <div style="color: #ffa500; margin: 5px 0;">${stars}</div>
-                <div style="font-size: 12px; color: #666; margin-bottom: 5px;">${restaurant.address}</div>
-                <div style="font-size: 11px; color: #555; line-height: 1.3;">${restaurant.review || '리뷰 없음'}</div>
-            </div>
-        `;
-    }
-
-    // 모든 인포윈도우 닫기
-    closeAllInfoWindows() {
-        this.markers.forEach(item => {
-            item.infoWindow.close();
+    // ── Close Overlay ──
+    closeOverlay() {
+        if (this.currentOverlay) {
+            this.currentOverlay.setMap(null);
+            this.currentOverlay = null;
+        }
+        this.markers.forEach(m => {
+            const div = m.markerContent.querySelector('div');
+            if (div) div.style.transform = 'rotate(-45deg) scale(1)';
         });
     }
 
-    // 주소로 검색
-    searchByAddress(address, callback) {
-        this.geocoder.addressSearch(address, (result, status) => {
-            if (status === kakao.maps.services.Status.OK) {
-                const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-                this.map.setCenter(coords);
-                this.map.setLevel(3);
-
-                if (callback) {
-                    callback({
-                        lat: result[0].y,
-                        lng: result[0].x,
-                        address: result[0].address_name
-                    });
-                }
-            } else {
-                alert('검색 결과가 없습니다.');
-            }
-        });
-    }
-
-    // 특정 맛집으로 이동
+    // ── Move to Restaurant ──
     moveToRestaurant(restaurant) {
         const position = new kakao.maps.LatLng(restaurant.latitude, restaurant.longitude);
         this.map.setCenter(position);
         this.map.setLevel(3);
 
-        // 해당 마커의 인포윈도우 열기
-        const markerData = this.markers.find(item => item.restaurant.id === restaurant.id);
+        const markerData = this.markers.find(m => m.restaurant.id === restaurant.id);
         if (markerData) {
-            this.closeAllInfoWindows();
-            markerData.infoWindow.open(this.map, markerData.marker);
+            this.closeOverlay();
+            this.currentOverlay = markerData.infoOverlay;
+            markerData.infoOverlay.setMap(this.map);
         }
     }
 
-    // 마커 삭제
+    // ── Fit Map Bounds to Markers ──
+    fitBoundsToMarkers() {
+        if (this.markers.length === 0) return;
+        if (this.markers.length === 1) {
+            this.map.setCenter(this.markers[0].position);
+            this.map.setLevel(3);
+            return;
+        }
+
+        const bounds = new kakao.maps.LatLngBounds();
+        this.markers.forEach(m => bounds.extend(m.position));
+        this.map.setBounds(bounds);
+    }
+
+    // ── Remove Marker ──
     removeMarker(restaurantId) {
-        const index = this.markers.findIndex(item => item.restaurant.id === restaurantId);
+        const index = this.markers.findIndex(m => m.restaurant.id === restaurantId);
         if (index !== -1) {
-            this.markers[index].marker.setMap(null);
+            this.markers[index].markerOverlay.setMap(null);
+            this.markers[index].infoOverlay.setMap(null);
             this.markers.splice(index, 1);
         }
     }
 
-    // 모든 마커 삭제
+    // ── Clear Markers ──
     clearMarkers() {
-        this.markers.forEach(item => {
-            item.marker.setMap(null);
+        this.closeOverlay();
+        this.markers.forEach(m => {
+            m.markerOverlay.setMap(null);
+            m.infoOverlay.setMap(null);
         });
         this.markers = [];
     }
 
-    // 마커들 업데이트
-    updateMarkers(restaurants) {
+    // ── Update Markers & Fit Bounds ──
+    updateMarkers(restaurants, autoFit = true) {
         this.clearMarkers();
-        restaurants.forEach(restaurant => {
-            this.addMarker(restaurant);
+        restaurants.forEach(r => this.addMarker(r));
+        if (autoFit && restaurants.length > 0) {
+            this.fitBoundsToMarkers();
+        }
+    }
+
+    // ── Search Place or Address (Kakao Geocoder + Places Keyword Search) ──
+    searchPlaceOrAddress(keyword, callback) {
+        if (!keyword) return;
+
+        // 1. Try Geocoder Address Search
+        this.geocoder.addressSearch(keyword, (result, status) => {
+            if (status === kakao.maps.services.Status.OK && result.length > 0) {
+                const lat = parseFloat(result[0].y);
+                const lng = parseFloat(result[0].x);
+                const coords = new kakao.maps.LatLng(lat, lng);
+                this.map.setCenter(coords);
+                this.map.setLevel(3);
+                if (callback) callback({ lat, lng, address: result[0].address.address_name, placeName: keyword });
+                return;
+            }
+
+            // 2. Fallback to Kakao Places Keyword Search for general buildings/landmarks/areas
+            if (!this.places) {
+                this.places = new kakao.maps.services.Places();
+            }
+
+            this.places.keywordSearch(keyword, (data, placeStatus) => {
+                if (placeStatus === kakao.maps.services.Status.OK && data.length > 0) {
+                    const firstPlace = data[0];
+                    const lat = parseFloat(firstPlace.y);
+                    const lng = parseFloat(firstPlace.x);
+                    const coords = new kakao.maps.LatLng(lat, lng);
+                    this.map.setCenter(coords);
+                    this.map.setLevel(3);
+                    const placeAddr = firstPlace.road_address_name || firstPlace.address_name || firstPlace.place_name;
+                    if (callback) callback({ lat, lng, address: placeAddr, placeName: firstPlace.place_name });
+                } else {
+                    if (callback) callback(null);
+                }
+            });
         });
+    }
+
+    // Keep backwards compatibility alias
+    searchByAddress(address, callback) {
+        this.searchPlaceOrAddress(address, callback);
     }
 }
 
-// 전역 변수로 맵 매니저 인스턴스 생성
 let mapManager;

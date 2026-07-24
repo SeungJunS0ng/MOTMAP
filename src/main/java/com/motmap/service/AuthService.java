@@ -89,6 +89,53 @@ public class AuthService {
     }
 
     /**
+     * 카카오 소셜 로그인 처리 (자동 회원가입 또는 기존 로그인)
+     */
+    @Transactional
+    public AuthResponseDto kakaoLogin(com.motmap.dto.KakaoLoginRequestDto kakaoDto) {
+        String username = "kakao_" + kakaoDto.getKakaoId();
+        log.info("카카오 소셜 로그인 시도: {}", username);
+
+        try {
+            User user = userRepository.findByUsername(username).orElseGet(() -> {
+                log.info("신규 카카오 소셜 사용자 등록: {}", username);
+                String nickname = kakaoDto.getNickname() != null ? kakaoDto.getNickname() : "카카오회원";
+                String email = kakaoDto.getEmail() != null ? kakaoDto.getEmail() : username + "@kakao.user";
+                
+                User newUser = User.builder()
+                        .username(username)
+                        .password(passwordEncoder.encode("kakao_social_secret_" + kakaoDto.getKakaoId()))
+                        .email(email)
+                        .nickname(nickname)
+                        .role(Role.USER)
+                        .build();
+                return userRepository.save(newUser);
+            });
+
+            user.updateLastLoginAt();
+            userRepository.save(user);
+
+            org.springframework.security.core.userdetails.User userDetails = new org.springframework.security.core.userdetails.User(
+                    user.getUsername(),
+                    user.getPassword(),
+                    java.util.Collections.singletonList(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
+            );
+
+            String token = jwtUtil.generateToken(userDetails);
+
+            return AuthResponseDto.builder()
+                    .token(token)
+                    .username(user.getUsername())
+                    .nickname(user.getNickname())
+                    .role(user.getRole().name())
+                    .build();
+        } catch (Exception e) {
+            log.error("로그인 처리 중 오류 발생", e);
+            throw new AuthenticationFailedException("로그인 처리 중 오류가 발생했습니다");
+        }
+    }
+
+    /**
      * 회원가입 처리
      *
      * @param signupRequest 회원가입 요청 정보
