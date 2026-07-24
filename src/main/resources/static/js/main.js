@@ -21,12 +21,22 @@ function escapeHtml(str) {
 
 function showToast(message, type = 'info', duration = 3500) {
     const container = document.getElementById('toastContainer');
+
+    // Remove any existing duplicate toast with same message to prevent stacking
+    const existingToasts = container.querySelectorAll('.toast');
+    existingToasts.forEach(t => {
+        if (t.dataset.message === message) {
+            t.remove();
+        }
+    });
+
     const icons = {
         success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️'
     };
 
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
+    toast.dataset.message = message;
     toast.style.cursor = 'pointer';
     toast.title = '클릭하여 닫기';
     toast.innerHTML = `

@@ -115,12 +115,12 @@ class KakaoMapManager {
         this.radiusCircle = new kakao.maps.Circle({
             center: new kakao.maps.LatLng(lat, lng),
             radius: radiusMeters,
-            strokeWeight: 2,
+            strokeWeight: 1.5,
             strokeColor: '#3B82F6',
-            strokeOpacity: 0.8,
+            strokeOpacity: 0.65,
             strokeStyle: 'dashed',
             fillColor: '#3B82F6',
-            fillOpacity: 0.12
+            fillOpacity: 0.02 // Extremely subtle, no map blue shading
         });
 
         this.radiusCircle.setMap(this.map);
