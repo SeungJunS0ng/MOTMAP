@@ -280,6 +280,7 @@ class KakaoMapManager {
         const markerOverlay = new kakao.maps.CustomOverlay({
             position: position,
             content: markerContent,
+            clickable: true,
             yAnchor: 1,
             zIndex: 1
         });
@@ -296,7 +297,7 @@ class KakaoMapManager {
         const overlayContent = document.createElement('div');
         overlayContent.className = 'custom-overlay';
         overlayContent.innerHTML = `
-            <button class="overlay-close" onclick="mapManager.closeOverlay()">✕</button>
+            <button class="overlay-close">✕</button>
             <div class="overlay-name">${emoji} ${escapeHtml(restaurant.name)}</div>
             <div class="overlay-meta" style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
                 ${categoryTag}
@@ -305,14 +306,43 @@ class KakaoMapManager {
             <div class="overlay-address">📍 ${escapeHtml(restaurant.address) || '주소 정보 없음'}</div>
             ${restaurant.review ? `<div class="overlay-review">"${escapeHtml(restaurant.review)}"</div>` : ''}
             <div class="overlay-actions" style="display:flex; gap:6px; margin-top:10px;">
-                <button class="overlay-btn overlay-btn-detail" onclick="restaurantUI.showDetail(${restaurant.id})" style="background: linear-gradient(135deg, #4F46E5, #3B82F6); color: white;">상세보기</button>
-                <button class="overlay-btn overlay-btn-navi" onclick="mapManager.openDirections('${escapedName}', ${restaurant.latitude}, ${restaurant.longitude})" style="background: linear-gradient(135deg, #10B981, #059669); color: white;">🧭 길찾기</button>
+                <button class="overlay-btn overlay-btn-detail" style="background: linear-gradient(135deg, #4F46E5, #3B82F6); color: white;">상세보기</button>
+                <button class="overlay-btn overlay-btn-navi" style="background: linear-gradient(135deg, #10B981, #059669); color: white;">🧭 길찾기</button>
             </div>
         `;
+
+        // Direct DOM event listeners for 100% reliable execution inside Kakao Overlay
+        const closeBtn = overlayContent.querySelector('.overlay-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                this.closeOverlay();
+            });
+        }
+
+        const detailBtn = overlayContent.querySelector('.overlay-btn-detail');
+        if (detailBtn) {
+            detailBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                if (restaurantUI) restaurantUI.showDetail(restaurant.id);
+            });
+        }
+
+        const naviBtn = overlayContent.querySelector('.overlay-btn-navi');
+        if (naviBtn) {
+            naviBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                this.openDirections(restaurant.name, restaurant.latitude, restaurant.longitude);
+            });
+        }
 
         const infoOverlay = new kakao.maps.CustomOverlay({
             position: position,
             content: overlayContent,
+            clickable: true, // CRITICAL FOR KAKAO CUSTOM OVERLAYS
             yAnchor: 1.28,
             zIndex: 25
         });
