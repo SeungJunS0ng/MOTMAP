@@ -27,3 +27,19 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Build & Logs ###
+.gradle/
+build/
+logs/
+*.log
+*.log.*
+
+### IDE ###
+.idea/
+*.iws
+*.iml
+*.ipr
+
+### Project Private Memory ###
+MEMORY.md

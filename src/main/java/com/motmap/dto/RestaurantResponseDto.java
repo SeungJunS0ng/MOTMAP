@@ -55,6 +55,9 @@ public class RestaurantResponseDto {
     @Schema(description = "작성자 닉네임", example = "존")
     private String createdByNickname;
 
+    @Schema(description = "현재 사용자가 수정/삭제 가능 여부", example = "true")
+    private Boolean canEdit;
+
     // Entity에서 DTO로 변환하는 생성자
     public RestaurantResponseDto(Restaurant restaurant) {
         this.id = restaurant.getId();

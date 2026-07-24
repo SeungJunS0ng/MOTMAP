@@ -3,85 +3,269 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOTMAP - 맛집 지도</title>
+    <meta name="description" content="MOTMAP - 카카오맵 기반 나만의 맛집 지도 서비스. 맛집을 저장하고 리뷰하세요.">
+    <title>MOTMAP — 나만의 맛집 지도</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3ecea445ce0565e4d9cc34bb5cd216b2&libraries=services"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>MOTMAP</h1>
-            <p>나만의 맛집 지도</p>
-        </header>
 
-        <div class="main-content">
-            <div class="map-section">
-                <div id="map"></div>
+    <!-- ═══ HEADER ═══ -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="/" class="logo">
+                    <div class="logo-icon">🍽️</div>
+                    <span class="logo-text">MOTMAP</span>
+                </a>
+            </div>
+            <div class="header-right">
+                <div class="user-badge hidden" id="userBadge">
+                    <span class="avatar" id="userAvatar"></span>
+                    <span id="usernameDisplay"></span>
+                </div>
+                <button class="icon-btn" id="themeToggle" title="테마 변경">🌙</button>
+                <button class="btn btn-logout hidden" id="logoutBtn">로그아웃</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ═══ MAIN LAYOUT ═══ -->
+    <main class="main-container">
+        <!-- Map -->
+        <section class="map-section">
+            <div id="map"></div>
+            <button class="location-btn" id="currentLocationBtn" title="현재 위치로 이동">📍</button>
+            <button class="icon-btn sidebar-toggle" id="sidebarToggle">☰</button>
+        </section>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <!-- Search -->
+            <div class="search-area">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="맛집 이름, 주소로 검색..." autocomplete="off" />
+                    <button class="btn-search" id="searchBtn" title="검색">🔍</button>
+                </div>
             </div>
 
-            <div class="sidebar">
-                <div class="search-section">
-                    <input type="text" id="searchInput" placeholder="맛집을 검색해보세요...">
-                    <button id="searchBtn">검색</button>
-                </div>
-
-                <div class="filter-section">
+            <!-- Filters -->
+            <div class="filter-area">
+                <div class="filter-row">
                     <select id="categoryFilter">
                         <option value="">전체 카테고리</option>
-                        <option value="KOREAN">한식</option>
-                        <option value="CHINESE">중식</option>
-                        <option value="JAPANESE">일식</option>
-                        <option value="WESTERN">양식</option>
-                        <option value="CAFE">카페</option>
-                        <option value="ETC">기타</option>
+                        <option value="KOREAN">🍚 한식</option>
+                        <option value="CHINESE">🥟 중식</option>
+                        <option value="JAPANESE">🍣 일식</option>
+                        <option value="WESTERN">🍝 양식</option>
+                        <option value="CAFE">☕ 카페</option>
+                        <option value="ETC">🍴 기타</option>
                     </select>
                     <select id="sortOrder">
-                        <option value="date">최신순</option>
-                        <option value="rating">평점순</option>
+                        <option value="date">🕐 최신순</option>
+                        <option value="rating">⭐ 평점순</option>
+                        <option value="distance">📏 거리순</option>
                     </select>
-                    <div id="highRatedButtonContainer" class="high-rated-container"></div>
                 </div>
-
-                <div class="restaurant-list">
-                    <h3>저장된 맛집</h3>
-                    <div id="restaurantList"></div>
+                <div class="filter-chips">
+                    <button class="chip" id="chipHighRated"><span class="chip-icon">🌟</span> 고평점</button>
+                    <button class="chip" id="chipNearby"><span class="chip-icon">📍</span> 내 근처</button>
+                    <button class="chip" id="chipReset"><span class="chip-icon">↻</span> 초기화</button>
                 </div>
+            </div>
 
-                <div class="add-restaurant-form" style="display: none;">
-                    <h3>맛집 추가</h3>
-                    <form id="addRestaurantForm">
-                        <input type="text" id="restaurantName" placeholder="맛집 이름" required>
-                        <input type="text" id="restaurantAddress" placeholder="주소" required>
-                        <select id="restaurantCategory" required>
-                            <option value="">카테고리 선택</option>
-                            <option value="KOREAN">한식</option>
-                            <option value="CHINESE">중식</option>
-                            <option value="JAPANESE">일식</option>
-                            <option value="WESTERN">양식</option>
-                            <option value="CAFE">카페</option>
-                            <option value="ETC">기타</option>
-                        </select>
-                        <div class="rating">
-                            <label>평점: </label>
-                            <div class="star-rating">
-                                <span class="star" data-rating="1">★</span>
-                                <span class="star" data-rating="2">★</span>
-                                <span class="star" data-rating="3">★</span>
-                                <span class="star" data-rating="4">★</span>
-                                <span class="star" data-rating="5">★</span>
+            <!-- Add Restaurant Form (hidden by default) -->
+            <div class="restaurant-form-section hidden" id="restaurantForm">
+                <h3>📌 새 맛집 등록</h3>
+                <form id="addRestaurantForm" autocomplete="off">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="restaurantName">맛집 이름</label>
+                            <input type="text" id="restaurantName" placeholder="예: 명동교자" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="restaurantAddress">주소</label>
+                            <div class="address-input-wrapper">
+                                <input type="text" id="restaurantAddress" placeholder="지도를 클릭하거나 주소를 검색하세요" />
+                                <button type="button" class="btn-address-search" id="addressSearchBtn">🔍 검색</button>
                             </div>
                         </div>
-                        <textarea id="restaurantReview" placeholder="리뷰를 작성해주세요..." rows="4"></textarea>
-                        <div class="form-buttons">
-                            <button type="submit">저장</button>
-                            <button type="button" id="cancelBtn">취소</button>
+                        <div class="form-group">
+                            <label for="restaurantCategory">카테고리</label>
+                            <select id="restaurantCategory" required>
+                                <option value="">카테고리 선택</option>
+                                <option value="KOREAN">🍚 한식</option>
+                                <option value="CHINESE">🥟 중식</option>
+                                <option value="JAPANESE">🍣 일식</option>
+                                <option value="WESTERN">🍝 양식</option>
+                                <option value="CAFE">☕ 카페</option>
+                                <option value="ETC">🍴 기타</option>
+                            </select>
                         </div>
-                    </form>
+                        <div class="form-group">
+                            <label>평점</label>
+                            <div class="star-rating-input" id="starRatingInput">
+                                <button type="button" class="star-btn active" data-rating="1">★</button>
+                                <button type="button" class="star-btn active" data-rating="2">★</button>
+                                <button type="button" class="star-btn active" data-rating="3">★</button>
+                                <button type="button" class="star-btn active" data-rating="4">★</button>
+                                <button type="button" class="star-btn active" data-rating="5">★</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="restaurantReview">리뷰</label>
+                            <textarea id="restaurantReview" placeholder="이 맛집에 대한 소감을 남겨주세요..." rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelFormBtn">취소</button>
+                        <button type="submit" class="btn btn-primary">💾 저장하기</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Restaurant List -->
+            <div class="restaurant-list-section">
+                <div class="list-header">
+                    <h3>맛집 목록 <span class="count-badge" id="restaurantCount">0</span></h3>
                 </div>
+                <div id="restaurantList"></div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- ═══ AUTH MODAL ═══ -->
+    <div class="modal-overlay hidden" id="authModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-icon">🍽️</div>
+                <h2>MOTMAP</h2>
+                <p>나만의 맛집 지도를 시작하세요</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">로그인</button>
+                <button class="auth-tab" data-tab="signup">회원가입</button>
+            </div>
+
+            <div class="auth-error" id="authError"></div>
+
+            <!-- Login Form -->
+            <div class="auth-form active" id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">아이디</label>
+                    <input type="text" id="loginUsername" placeholder="아이디를 입력하세요" />
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">비밀번호</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="loginPassword" placeholder="비밀번호를 입력하세요" />
+                        <button type="button" class="password-toggle" data-target="loginPassword">👁️</button>
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="loginBtn">로그인</button>
+            </div>
+
+            <!-- Signup Form -->
+            <div class="auth-form" id="signupForm">
+                <div class="form-group">
+                    <label for="signupUsername">아이디</label>
+                    <input type="text" id="signupUsername" placeholder="예: motmap_user (3자 이상)" />
+                    <span class="field-error" id="errorUsername"></span>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">이메일</label>
+                    <input type="email" id="signupEmail" placeholder="예: motmap@gmail.com" />
+                    <span class="field-hint">@ 포함 이메일 주소를 입력하세요</span>
+                    <span class="field-error" id="errorEmail"></span>
+                </div>
+                <div class="form-group">
+                    <label for="signupNickname">닉네임</label>
+                    <input type="text" id="signupNickname" placeholder="예: 맛집헌터 (2자 이상)" />
+                    <span class="field-error" id="errorNickname"></span>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">비밀번호</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="signupPassword" placeholder="4자 이상 입력" />
+                        <button type="button" class="password-toggle" data-target="signupPassword">👁️</button>
+                    </div>
+                    <span class="field-error" id="errorPassword"></span>
+                </div>
+                <button class="btn btn-primary" id="signupBtn">회원가입</button>
+            </div>
+
+            <div class="auth-hint">
+                테스트 계정: <code>admin</code> / <code>admin1234</code>
             </div>
         </div>
     </div>
 
+    <!-- ═══ CONFIRM MODAL ═══ -->
+    <div class="modal-overlay confirm-modal hidden" id="confirmModal">
+        <div class="modal-card">
+            <div class="confirm-icon" id="confirmIcon">⚠️</div>
+            <h3 id="confirmTitle">확인</h3>
+            <p id="confirmMessage">정말 진행하시겠습니까?</p>
+            <div class="confirm-actions">
+                <button class="btn btn-secondary" id="confirmCancelBtn">취소</button>
+                <button class="btn btn-danger" id="confirmOkBtn">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ DETAIL MODAL ═══ -->
+    <div class="modal-overlay detail-modal hidden" id="detailModal">
+        <div class="modal-card">
+            <div class="detail-header" id="detailHeader">
+                <h2 id="detailName"></h2>
+                <div class="detail-stars" id="detailStars"></div>
+                <span class="detail-category" id="detailCategory"></span>
+            </div>
+            <div class="detail-body">
+                <div class="detail-info-row">
+                    <span class="info-icon">📍</span>
+                    <div class="info-content">
+                        <div class="info-label">주소</div>
+                        <div class="info-value" id="detailAddress"></div>
+                    </div>
+                </div>
+                <div class="detail-info-row">
+                    <span class="info-icon">✍️</span>
+                    <div class="info-content">
+                        <div class="info-label">리뷰</div>
+                        <div class="info-value" id="detailReview"></div>
+                    </div>
+                </div>
+                <div class="detail-info-row">
+                    <span class="info-icon">👤</span>
+                    <div class="info-content">
+                        <div class="info-label">등록자</div>
+                        <div class="info-value" id="detailOwner"></div>
+                    </div>
+                </div>
+                <div class="detail-info-row">
+                    <span class="info-icon">📅</span>
+                    <div class="info-content">
+                        <div class="info-label">등록일</div>
+                        <div class="info-value" id="detailDate"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="detail-footer">
+                <button class="btn btn-secondary" id="detailCloseBtn">닫기</button>
+                <button class="btn btn-primary" id="detailMapBtn">🗺️ 지도에서 보기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ TOAST CONTAINER ═══ -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ═══ SCRIPTS ═══ -->
     <script th:src="@{/js/api.js}"></script>
     <script th:src="@{/js/map.js}"></script>
     <script th:src="@{/js/restaurant.js}"></script>

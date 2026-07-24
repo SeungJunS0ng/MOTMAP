@@ -1,376 +1,134 @@
-# MOTMAP - 카카오맵 기반 맛집 저장 및 리뷰 프로젝트 🍽️
+# MOTMAP — 나만의 맛집 지도 서비스 🍽️
 
-Spring Boot와 카카오맵 API를 활용한 현대적인 맛집 지도 서비스입니다.
+> **Spring Boot 3.2**와 **카카오맵 API** 기반의 프리미엄 맛집 저장 및 리뷰 웹 애플리케이션입니다.
 
-## 🌟 주요 기능
+---
 
-- **🔐 JWT 기반 인증 시스템**: 회원가입, 로그인, 토큰 인증
-- **👥 사용자 관리**: 20명의 테스트 계정, Role 기반 권한 (USER, ADMIN)
-- **🔒 소유권 관리**: 본인이 등록한 맛집만 수정/삭제 가능
-- **🗺️ 카카오맵 완전 연동**: 실제 지도에서 맛집 위치 확인 및 클릭으로 추가
-- **🍽️ 완전한 맛집 관리**: CRUD + 검색 + 필터링 기능
-- **⭐ 별점 & 리뷰 시스템**: 5점 만점 평가 및 상세 리뷰 작성
-- **🔍 강력한 검색**: 이름, 주소, 리뷰 내용 통합 검색
-- **🏷️ 스마트 카테고리**: 한식, 중식, 일식, 양식, 카페, 기타 분류
-- **📍 위치 기반 서비스**: GPS 현재 위치 & 근처 맛집 검색 (반경 설정 가능)
-- **🌟 고평점 필터**: 4점 이상 고평점 맛집만 별도 조회
-- **📱 완전 반응형**: 모바일/태블릿/데스크톱 완벽 지원
+## 🌟 주요 기능 (Features)
 
-## 🛠️ 기술 스택
+### 🎨 1. 프리미엄 디자인 & 다크 모드 (Modern Design System)
+- **글래스모피즘 (Glassmorphism)**: Frosted glass 효과가 적용된 헤더 및 모달 UI
+- **다크 / 라이트 테마**: 토글 버튼 + 시스템 설정 자동 감지 + `localStorage` 테마 유지
+- **마이크로 애니메이션**: 카드 호버, 스켈레톤 로딩, 모달 슬라이드, 마커 바운스 효과
 
-### Backend (Modern Java)
-- **Spring Boot 3.2.0** - 최신 스프링 프레임워크
-- **Spring Security + JWT** - 토큰 기반 인증/인가
-- **Spring Data JPA** - ORM & 데이터베이스 관리
-- **MySQL 8** - 프로덕션급 관계형 데이터베이스
-- **Hibernate** - JPA 구현체 (자동 DDL)
-- **BCrypt** - 비밀번호 암호화
-- **Lombok** - 보일러플레이트 코드 제거
-- **Bean Validation** - 입력값 검증
-- **Swagger UI (OpenAPI 3)** - 자동 API 문서화
-- **Gradle** - 빌드 도구
+### 🗺️ 2. 위치 & 카카오맵 고도화 (Location & Map UX)
+- **📍 내 위치 맥박(Pulse) 마커**: 현재 위치 버튼 클릭 시 GPS 위치에 파란색 맥박 애니메이션 마커 렌더링
+- **📌 신규 등록 드래프트 핀**: 지도 클릭 시 통통 튀는 등록 예정 위치 핀 표시
+- **📏 실시간 거리 계산 배지**: Haversine 공식을 적용하여 현재 위치 기준 맛집 거리(`📍 350m`, `📍 1.2km`) 카드에 실시간 표시
+- **🔍 주소/장소 직접 검색**: 등록 폼에서 건물명/도로명 주소 입력 후 검색 시 지오코딩으로 위치 자동 이동 및 핀 생성
+- **📐 지도 영역 자동 맞춤 (`fitBounds`)**: 검색 및 카테고리 필터링 시 모든 마커가 화면에 보이도록 축척/중심 자동 조절
+- **🍚 카테고리 이모지 커스텀 마커**: 한식(🍚), 중식(🥟), 일식(🍣), 양식(🍝), 카페(☕), 기타(🍴) 눈물 모양 커스텀 마커
 
-### Frontend (Modern Web)
-- **HTML5 / CSS3 / JavaScript ES6+**
-- **Kakao Map JavaScript API** - 실시간 지도 연동
-- **Thymeleaf** - 서버사이드 템플릿 엔진
-- **Fetch API** - 비동기 REST API 통신
+### 🔐 3. JWT 인증 & 회원 관리 (Authentication)
+- **로그인 & 회원가입 탭 모달**: 패스워드 비밀 보기(👁️/🙈) 토글 기능
+- **실시간/서버 필드별 에러 처리**: 이메일 양식, 아이디/비밀번호 길이에 따른 하단 에러 텍스트 & 빨간 테두리 하이라이트
+- **소유권 관리**: 본인이 등록한 맛집만 수정/삭제 권한 부여
 
-## 📋 사전 요구사항
+### 🔔 4. 사용자 편의성 (Usability & Safety)
+- **토스트 알림 시스템**: `alert()` 대신 4가지(성공/경고/에러/정보) 커스텀 토스트 알림
+- **커스텀 확인 모달**: `confirm()` 대신 커스텀 모달팝업 연동
+- **XSS 보안 방어**: 사용자 입력값(`name`, `review`, `address`, `nickname`) 자동 HTML 에스케이프 처리
 
-1. **Java 17** 이상
-2. **MySQL 8.0** 이상
-3. **IntelliJ IDEA** (권장) 또는 Eclipse
-4. **카카오 개발자 계정** 및 JavaScript 키
+---
 
-## 🚀 설치 및 실행
+## 🛠️ 기술 스택 (Tech Stack)
 
-### 1. 프로젝트 클론
+### Backend
+- **Java 17** / **Spring Boot 3.2.0**
+- **Spring Security** + **JWT** (JSON Web Token)
+- **Spring Data JPA** / **MySQL 8** (Hibernate ORM)
+- **BCrypt Password Encoder**
+- **Swagger UI (OpenAPI 3.0)** — API 문서화
+- **Gradle**
+
+### Frontend
+- **HTML5 / CSS3** (Vanilla CSS Variables, Flexbox/Grid, Glassmorphism, Animations)
+- **JavaScript (ES6+)** — Modular Structure
+- **Kakao Map JavaScript SDK**
+- **Thymeleaf**
+
+---
+
+## 🚀 설치 및 실행 방법
+
+### 1. Repository Clone
 ```bash
-git clone [your-repository-url]
+git clone https://github.com/SeungJunS0ng/MOTMAP.git
 cd MOTMAP
 ```
 
-### 2. MySQL 데이터베이스 설정
-```bash
-# MySQL 루트 계정으로 접속
-mysql -u root -p
-
-# 데이터베이스 및 사용자 생성
-source scripts/create_mysql_db.sql;
-exit;
+### 2. MySQL 데이터베이스 생성
+```sql
+CREATE DATABASE motmap CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-**자세한 설정은 `MYSQL_SETUP.md` 참고**
-
-### 3. 카카오맵 API 키 설정
-1. [Kakao Developers](https://developers.kakao.com/)에서 애플리케이션 등록
-2. **Web 플랫폼 등록**: `http://localhost:8080` 추가
-3. **JavaScript 키** 발급 및 적용 (이미 적용됨: `3ecea445ce0565e4d9cc34bb5cd216b2`)
+### 3. application.yml 설정 확인
+`src/main/resources/application.yml` 파일에서 MySQL 접속 정보 및 JWT Secret Key 확인:
+```yaml
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/motmap?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: admin
+    password: YOUR_PASSWORD
+```
 
 ### 4. 애플리케이션 실행
-
-#### 🎯 IntelliJ IDEA (권장)
-```
-1. IntelliJ IDEA에서 프로젝트 열기
-2. Gradle 프로젝트 새로고침 (우측 Gradle 탭)
-3. src/main/java/com/motmap/MotmapApplication.java 실행
-```
-
-#### ⚡ Gradle 사용
 ```bash
-# 프로젝트에 gradle wrapper가 정상적으로 구성된 경우
 ./gradlew bootRun
-# 만약 Gradle Wrapper 실행 시 'GradleWrapperMain' 관련 오류가 발생하면
-# 로컬에 Gradle을 설치한 뒤 `gradle wrapper`를 실행하여 wrapper 파일을 생성하거나
-# 아래 Maven 방법을 사용하세요.
 ```
 
-#### 📦 Maven 사용
-```bash
-# Maven이 설치되어 있다면
-mvn spring-boot:run
-```
+### 5. 서비스 접속
+- **메인 웹 페이지**: `http://localhost:8080`
+- **Swagger API 문서**: `http://localhost:8080/swagger-ui.html`
+- **테스트 계정**: `admin` / `admin1234`
 
-### 5. 웹 브라우저 접속
-- **메인 서비스**: `http://localhost:8080`
-- **API 문서 (Swagger UI)**: `http://localhost:8080/swagger-ui.html`
-- **OpenAPI JSON**: `http://localhost:8080/api-docs`
-- **데이터베이스**: MySQL (localhost:3306/motmap)
-  - 접속: `mysql -u admin -p motmap` (비밀번호: 091122john)
-
-### 6. 로그인 테스트
-**테스트 계정:**
-- 관리자: `admin` / `admin1234`
-- 일반 사용자: `john` / `john1234`, `kim` / `kim1234` 등
-- **전체 20명의 테스트 계정은 `LOGIN_GUIDE.md` 참고**
-
-**자세한 인증 가이드는 `LOGIN_GUIDE.md` 참고**
+---
 
 ## 📁 프로젝트 구조
 
 ```
 MOTMAP/
-├── 🏗️ Backend (Spring Boot 3.2.0)
-│   ├── controller/         # REST API 컨트롤러
-│   │   ├── RestaurantController.java    # 맛집 CRUD API (10개 엔드포인트)
-│   │   └── ViewController.java          # 웹 페이지 컨트롤러
-│   ├── service/
-│   │   └── RestaurantService.java       # 비즈니스 로직 (Lombok 적용)
-│   ├── repository/
-│   │   └── RestaurantRepository.java    # 데이터 액세스 (JPA)
-│   ├── entity/
-│   │   ├── Restaurant.java              # 맛집 엔티티 (Builder 패턴)
-│   │   └── Category.java                # 카테고리 enum
-│   ├── dto/
-│   │   ├── RestaurantRequestDto.java    # 요청 DTO (Lombok)
-│   │   └── RestaurantResponseDto.java   # 응답 DTO (Lombok)
-│   ├── exception/                       # 예외 처리 체계
-│   │   ├── BusinessException.java       # 기본 비즈니스 예외
-│   │   ├── ErrorCode.java              # 에러 코드 enum
-│   │   ├── ErrorResponse.java          # 구조화된 에러 응답
-│   │   └── [기타 커스텀 예외들]
-│   ├── config/
-│   │   ├── SwaggerConfig.java          # API 문서화 설정
-│   │   ├── WebConfig.java             # CORS 설정
-│   │   └── DataInitializer.java       # 초기 데이터 생성
-│   └── util/
-│       └── LocationUtils.java         # 위치 계산 유틸리티
-├── 🎨 Frontend (Modern Web)
-│   ├── templates/index.html           # Thymeleaf 메인 페이지
-│   └── static/
-│       ├── css/style.css             # 반응형 스타일시트
-│       └── js/                       # ES6+ JavaScript 모듈
-│           ├── api.js                # REST API 통신 관리
-│           ├── map.js                # 카카오맵 관리
-│           ├── restaurant.js         # 맛집 UI 관리
-│           └── main.js               # 애플리케이션 초기화
-├── ⚙️ 설정 파일
-│   ├── build.gradle                  # Gradle 빌드 (Lombok, Swagger 포함)
-│   ├── pom.xml                      # Maven 빌드 (호환성)
-│   └── application.yml              # Spring Boot 설정
-└── 📚 문서
-    ├── README.md                    # 프로젝트 가이드
-    ├── TESTING_GUIDE.md            # 테스팅 체크리스트
-    └── [기타 가이드 문서들]
+├── 🏗️ src/main/java/com/motmap/
+│   ├── config/              # Security, JWT, Swagger 설정
+│   ├── controller/          # AuthController, RestaurantController, ViewController
+│   ├── dto/                 # Request/Response DTO
+│   ├── entity/              # User, Restaurant, Category, Role
+│   ├── exception/           # GlobalExceptionHandler, BusinessException
+│   ├── repository/          # UserRepository, RestaurantRepository
+│   ├── service/             # AuthService, RestaurantService, CustomUserDetailsService
+│   └── util/                # JwtTokenProvider, LocationUtils
+│
+├── 🎨 src/main/resources/
+│   ├── static/
+│   │   ├── css/style.css    # 프리미엄 디자인 시스템 & 다크모드
+│   │   └── js/
+│   │       ├── api.js       # JWT REST API 통신 모듈
+│   │       ├── map.js       # 카카오맵, 마커, 오버레이, 위치 모듈
+│   │       ├── restaurant.js# 카드 UI, 상세 모달, 거리 계산, 필터 모듈
+│   │       └── main.js      # 테마, 토스트, 확인 모달, 인증 컨트롤러
+│   └── templates/
+│       └── index.html       # 메인 Thymeleaf 레이아웃
 ```
-
-## 🔧 API 엔드포인트
-
-### 📚 완전한 API 문서화
-- **Swagger UI**: `http://localhost:8080/swagger-ui/index.html`
-- **OpenAPI 3.0 JSON**: `http://localhost:8080/v3/api-docs`
-- **한글 문서화**: 모든 API에 상세한 한글 설명과 예시값 제공
-
-### 🍽️ 맛집 관리 API
-- `GET /api/restaurants` - 전체 맛집 조회
-- `GET /api/restaurants/{id}` - 특정 맛집 상세 조회
-- `POST /api/restaurants` - 맛집 등록 (중복 검증 포함)
-- `PUT /api/restaurants/{id}` - 맛집 정보 수정
-- `DELETE /api/restaurants/{id}` - 맛집 삭제
-
-### 🔍 검색 및 필터링 API
-- `GET /api/restaurants/search?keyword={keyword}` - 통합 키워드 검색
-- `GET /api/restaurants/category/{category}` - 카테고리별 조회
-- `GET /api/restaurants/rating/{rating}` - 특정 평점 이상 조회
-- `GET /api/restaurants/high-rated` - 🌟 고평점 맛집 (4점 이상)
-- `GET /api/restaurants/sorted/rating` - 평점순 정렬
-- `GET /api/restaurants/sorted/date` - 최신 등록순 정렬
-
-### 📍 위치 기반 API
-- `GET /api/restaurants/nearby?lat={lat}&lng={lng}&radius={radius}` - 근처 맛집 검색
-
-## 💾 데이터베이스
-
-현재 **MySQL 데이터베이스**를 사용합니다. `src/main/resources/application.yml`에서 설정을 확인하세요.
-
-### MySQL 설정 정보
-```yaml
-데이터베이스: motmap
-호스트: localhost
-포트: 3306
-사용자: admin
-비밀번호: 091122john
-문자셋: utf8mb4
-타임존: Asia/Seoul
-```
-
-### MySQL 초기 설정
-```bash
-# 1. MySQL 루트로 접속
-mysql -u root -p
-
-# 2. 데이터베이스 및 사용자 생성
-source scripts/create_mysql_db.sql;
-
-# 3. 접속 확인
-mysql -u admin -p motmap
-```
-
-> 📖 **자세한 설정 가이드**: `MYSQL_SETUP.md` 참고
-> 
-> ⚠️ **보안**: 운영 환경에서는 비밀번호를 환경 변수로 관리하세요
-
-### 📊 초기 데이터 (자동 생성)
-서울 명동 지역의 5개 테스트 맛집이 자동으로 생성됩니다:
-- **명동교자** (한식) ⭐⭐⭐⭐ - 유명한 만두집
-- **전주중앙회관** (한식) ⭐⭐⭐⭐⭐ - 전통 한정식
-- **스타벅스 명동점** (카페) ⭐⭐⭐⭐ - 명동 중심가 카페
-- **교동짬뽕** (중식) ⭐⭐⭐⭐ - 얼큰한 짬뽕 전문점
-- **긴자료코** (일식) ⭐⭐⭐⭐⭐ - 고급 일식 레스토랑
-
-### 🗄️ 데이터베이스 스키마
-```sql
--- 성능 최적화를 위한 인덱스 자동 생성
-CREATE INDEX idx_restaurant_category ON restaurants(category);
-CREATE INDEX idx_restaurant_rating ON restaurants(rating);  
-CREATE INDEX idx_restaurant_location ON restaurants(latitude, longitude);
-CREATE INDEX idx_restaurant_created_at ON restaurants(created_at);
-```
-
-## 🎯 사용 방법
-
-### 1. **🗺️ 맛집 지도 탐색**
-- 카카오맵에서 서울시청 중심으로 시작
-- 📍 "현재 위치" 버튼으로 내 위치로 이동
-- 지도 확대/축소로 원하는 지역 탐색
-
-### 2. **➕ 새 맛집 추가**
-```
-지도에서 원하는 위치 클릭 → 
-맛집 정보 입력 폼 나타남 → 
-이름, 카테고리, 평점, 리뷰 작성 → 
-저장 버튼 클릭
-```
-
-### 3. **🔍 맛집 검색 & 필터링**
-- **키워드 검색**: 검색창에 맛집 이름이나 지역 입력
-- **카테고리 필터**: 드롭다운에서 음식 종류 선택
-- **정렬 옵션**: 최신순 또는 평점순 선택
-- **🌟 고평점 필터**: "고평점 맛집 보기" 버튼 클릭
-
-### 4. **📱 맛집 관리**
-- **상세 보기**: 맛집 카드에서 "지도에서 보기" 클릭
-- **정보 수정**: 맛집 정보 업데이트
-- **삭제**: 맛집 삭제 (확인 대화상자 포함)
-
-## 🔄 개발 워크플로우
-
-### 🧪 테스트 환경
-1. **애플리케이션 실행**: `MotmapApplication.java` 실행
-2. **기본 기능 테스트**: 지도 로드, 맛집 목록 확인
-3. **API 테스트**: Swagger UI에서 엔드포인트 테스트
-4. **데이터 확인**: H2 콘솔에서 SQL 쿼리 실행
-
-### 🔧 개발 도구
-- **Hot Reload**: Spring Boot DevTools로 자동 재시작
-- **API 문서**: Swagger UI에서 실시간 API 테스트
-- **데이터베이스**: H2 콘솔에서 데이터 직접 조회/수정
-- **로깅**: 콘솔과 `logs/motmap.log` 파일에서 디버깅 정보 확인
-
-## 🎮 주요 사용 시나리오
-
-### 시나리오 1: 새 맛집 발견 및 등록
-```
-1. 지도에서 새로운 맛집 위치 클릭
-2. 자동으로 주소가 채워진 등록 폼 확인
-3. 맛집 이름, 카테고리, 평점, 리뷰 입력
-4. 저장하면 지도에 마커와 목록에 추가됨
-```
-
-### 시나리오 2: 맛집 탐색 및 검색
-```
-1. 검색창에 "명동" 입력하여 지역별 검색
-2. 카테고리를 "한식"으로 필터링
-3. "고평점 맛집 보기" 버튼으로 4점 이상만 조회
-4. 맛집 클릭하여 지도에서 위치 확인
-```
-
-### 시나리오 3: API 개발 및 테스트
-```
-1. http://localhost:8080/swagger-ui.html 접속
-2. "맛집 관리" API 그룹에서 원하는 엔드포인트 선택
-3. "Try it out" 버튼으로 실시간 API 테스트
-4. 요청/응답 데이터 형식 확인
-```
-
-## 🚀 새로운 기능 (최근 추가)
-
-### 🌟 고평점 맛집 필터링
-- **백엔드**: `/api/restaurants/high-rated` 엔드포인트
-- **프론트엔드**: 전용 필터 버튼으로 4점 이상 맛집만 조회
-- **자동 마커 업데이트**: 지도에서도 고평점 맛집만 표시
-
-### 📍 위치 유틸리티 시스템
-- **LocationUtils**: 두 지점 간 거리 계산 (Haversine 공식)
-- **위치 검증**: 위도/경도 유효성 자동 확인
-- **근거리 검색**: 정확한 거리 계산 기반 근처 맛집 찾기
-
-### 🛡️ 견고한 예외 처리
-- **BusinessException**: 계층적 예외 구조
-- **ErrorCode**: 표준화된 에러 코드 체계
-- **ErrorResponse**: JSON 형태의 구조화된 에러 응답
-- **필드별 검증**: 상세한 입력값 오류 메시지
-
-## 💡 기술적 특징
-
-### 🔧 Modern Java Patterns
-- **Lombok**: `@Data`, `@Builder`, `@RequiredArgsConstructor` 활용
-- **Builder 패턴**: 가독성 높은 객체 생성
-- **정적 팩토리 메소드**: `RestaurantResponseDto.from()`
-- **Stream API**: Java 17의 `.toList()` 활용
-
-### 📊 데이터베이스 최적화
-- **인덱스 자동 생성**: 카테고리, 평점, 위치, 생성일 기준
-- **JPA 쿼리 최적화**: Native Query 활용한 근거리 검색
-- **중복 방지**: 이름+주소 기준 유니크 검증
-
-### 🔍 검색 성능
-- **통합 검색**: 이름, 주소, 리뷰에서 대소문자 무시 검색
-- **위치 기반 검색**: 반경 설정 가능한 근거리 맛집 찾기
-- **다양한 정렬**: 평점순, 최신순, 카테고리별
-
-## 🔮 향후 개선 계획
-
-- [ ] **사용자 인증**: Spring Security 도입
-- [ ] **이미지 업로드**: 맛집 사진 첨부 기능
-- [ ] **소셜 기능**: 맛집 공유, 즐겨찾기
-- [ ] **리뷰 시스템**: 댓글, 좋아요 기능
-- [ ] **실제 DB 연동**: MySQL/PostgreSQL 지원
-- [ ] **캐시 시스템**: Redis 캐시 도입
-- [ ] **모바일 앱**: React Native/Flutter 연동
-
-## 🤝 기여하기
-
-```bash
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-```
-
-## 📄 라이선스
-
-이 프로젝트는 **MIT 라이선스** 하에 있습니다. 자유롭게 사용, 수정, 배포할 수 있습니다.
-
-## 📞 문의 및 지원
-
-- **이슈 리포트**: [GitHub Issues](https://github.com/yourusername/motmap/issues)
-- **기능 요청**: [GitHub Discussions](https://github.com/yourusername/motmap/discussions)
-- **이메일**: contact@motmap.com
-
-## 🏆 프로젝트 하이라이트
-
-- ✅ **Production Ready**: 실제 운영 환경에 배포 가능한 수준
-- ✅ **Clean Architecture**: SOLID 원칙 적용된 설계
-- ✅ **Modern Tech Stack**: 최신 Java 17 + Spring Boot 3.2
-- ✅ **완전한 테스트**: Swagger UI로 모든 API 테스트 가능
-- ✅ **확장 가능**: 새로운 기능 추가가 용이한 구조
-- ✅ **개발자 친화적**: 상세한 문서화와 로깅
 
 ---
 
-**Made with ❤️ using Spring Boot 3.2 & Kakao Map API**
+## 🔧 REST API 주요 엔드포인트
 
-*더 맛있는 세상을 위한 개발자들의 맛집 지도 서비스*
+| 분류 | 메서드 | 엔드포인트 | 설명 |
+|------|--------|------------|------|
+| **인증** | `POST` | `/api/auth/login` | 로그인 및 JWT 토큰 발급 |
+| | `POST` | `/api/auth/signup` | 회원가입 |
+| | `GET` | `/api/auth/me` | 현재 사용자 정보 조회 |
+| **맛집** | `GET` | `/api/restaurants` | 전체 맛집 목록 조회 |
+| | `POST` | `/api/restaurants` | 새 맛집 등록 |
+| | `PUT` | `/api/restaurants/{id}` | 맛집 수정 (본인 소유만) |
+| | `DELETE` | `/api/restaurants/{id}` | 맛집 삭제 (본인 소유만) |
+| | `GET` | `/api/restaurants/search` | 이름/주소/리뷰 키워드 검색 |
+| | `GET` | `/api/restaurants/nearby` | 내 위치 기반 근처 맛집 검색 |
+| | `GET` | `/api/restaurants/high-rated` | 고평점(4점 이상) 맛집 검색 |
+
+---
+
+## 📄 라이선스
+
+이 프로젝트는 **MIT License**를 따릅니다.
