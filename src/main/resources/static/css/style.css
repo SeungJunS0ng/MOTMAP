@@ -1544,6 +1544,31 @@ h1, h2, h3, h4 { font-weight: 700; line-height: 1.2; }
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
 }
 
+/* ── Mobile Bottom Sheet Handle ── */
+.bottom-sheet-handle-area {
+    display: none;
+    width: 100%;
+    padding: 10px 0 6px 0;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    touch-action: none;
+    user-select: none;
+}
+
+.bottom-sheet-handle {
+    width: 42px;
+    height: 5px;
+    background: var(--border-medium);
+    border-radius: 10px;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.bottom-sheet-handle-area:active .bottom-sheet-handle {
+    background: var(--brand-primary);
+    transform: scaleX(1.2);
+}
+
 /* ============================================
    RESPONSIVE
    ============================================ */
@@ -1554,26 +1579,56 @@ h1, h2, h3, h4 { font-weight: 700; line-height: 1.2; }
     }
 
     .main-container {
-        flex-direction: column;
+        position: relative;
         height: calc(100dvh - var(--header-height));
+        overflow: hidden;
     }
 
+    /* 100% Full-Screen Background Map */
     .map-section {
-        height: 40vh;
-        min-height: 230px;
-        flex: none;
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
     }
 
+    /* Native Bottom Sheet Drawer */
     .sidebar {
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
         width: 100%;
-        flex: 1;
-        overflow-y: auto;
-        border-left: none;
-        border-top: 1px solid var(--border-light);
+        height: 78dvh;
+        transform: translateY(calc(78dvh - 145px));
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 50;
+        border-top-left-radius: 24px;
+        border-top-right-radius: 24px;
+        box-shadow: 0 -10px 32px rgba(0, 0, 0, 0.25);
+        border: 1px solid var(--border-light);
+        border-bottom: none;
+        background: var(--bg-secondary);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+
+    .sidebar.expanded {
+        transform: translateY(0);
+    }
+
+    .bottom-sheet-handle-area {
+        display: flex;
+    }
+
+    .location-btn {
+        bottom: 165px;
+        right: 16px;
+        z-index: 10;
+        transition: bottom 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .sidebar-toggle {
-        display: flex;
+        display: none;
     }
 
     .header-right {
@@ -1598,6 +1653,7 @@ h1, h2, h3, h4 { font-weight: 700; line-height: 1.2; }
         left: 12px;
         right: 12px;
         bottom: 12px;
+        z-index: 10000;
     }
 
     .toast {

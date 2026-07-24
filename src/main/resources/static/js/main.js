@@ -330,6 +330,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 showToast('모바일 브라우저 메뉴 [홈 화면에 추가]를 눌러 앱으로 설치할 수 있습니다 📲', 'info');
             }
         });
+    // Bottom Sheet Drag Handle Interaction for Mobile
+    const bottomSheetHandle = document.getElementById('bottomSheetHandle');
+    const sidebar = document.getElementById('sidebar');
+    if (bottomSheetHandle && sidebar) {
+        let startY = 0;
+        let isDragging = false;
+
+        bottomSheetHandle.addEventListener('click', () => {
+            sidebar.classList.toggle('expanded');
+        });
+
+        bottomSheetHandle.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+            isDragging = true;
+        }, { passive: true });
+
+        bottomSheetHandle.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const currentY = e.touches[0].clientY;
+            const diffY = currentY - startY;
+            if (diffY < -25) {
+                sidebar.classList.add('expanded');
+            } else if (diffY > 25) {
+                sidebar.classList.remove('expanded');
+            }
+        }, { passive: true });
+
+        bottomSheetHandle.addEventListener('touchend', () => {
+            isDragging = false;
+        });
     }
 
     // Theme
