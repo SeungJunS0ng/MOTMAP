@@ -266,25 +266,30 @@ class KakaoMapManager {
 
         const escapedName = escapeHtml(restaurant.name).replace(/'/g, "\\'");
 
+        const categoryTag = `<span class="category-tag ${restaurant.category}">${this.getCategoryLabel(restaurant.category)}</span>`;
+
         const overlayContent = document.createElement('div');
         overlayContent.className = 'custom-overlay';
         overlayContent.innerHTML = `
             <button class="overlay-close" onclick="mapManager.closeOverlay()">✕</button>
             <div class="overlay-name">${emoji} ${escapeHtml(restaurant.name)}</div>
-            <div class="overlay-stars">${starsHtml}</div>
-            <div class="overlay-address">📍 ${escapeHtml(restaurant.address) || '주소 없음'}</div>
+            <div class="overlay-meta" style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+                ${categoryTag}
+                <div class="overlay-stars" style="display:inline-flex; align-items:center;">${starsHtml}</div>
+            </div>
+            <div class="overlay-address">📍 ${escapeHtml(restaurant.address) || '주소 정보 없음'}</div>
             ${restaurant.review ? `<div class="overlay-review">"${escapeHtml(restaurant.review)}"</div>` : ''}
-            <div style="display:flex; gap:6px; margin-top:8px;">
-                <button class="overlay-btn" onclick="restaurantUI.showDetail(${restaurant.id})">상세보기</button>
-                <button class="overlay-btn" onclick="mapManager.openDirections('${escapedName}', ${restaurant.latitude}, ${restaurant.longitude})" style="background:var(--accent-blue); flex:1;">🧭 길찾기</button>
+            <div class="overlay-actions" style="display:flex; gap:6px; margin-top:10px;">
+                <button class="overlay-btn overlay-btn-detail" onclick="restaurantUI.showDetail(${restaurant.id})" style="background: linear-gradient(135deg, #4F46E5, #3B82F6); color: white;">상세보기</button>
+                <button class="overlay-btn overlay-btn-navi" onclick="mapManager.openDirections('${escapedName}', ${restaurant.latitude}, ${restaurant.longitude})" style="background: linear-gradient(135deg, #10B981, #059669); color: white;">🧭 길찾기</button>
             </div>
         `;
 
         const infoOverlay = new kakao.maps.CustomOverlay({
             position: position,
             content: overlayContent,
-            yAnchor: 1.15,
-            zIndex: 10
+            yAnchor: 1.28,
+            zIndex: 25
         });
 
         markerContent.addEventListener('click', (e) => {
