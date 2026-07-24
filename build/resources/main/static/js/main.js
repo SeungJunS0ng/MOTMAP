@@ -484,8 +484,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (apiService.isLoggedIn()) {
         updateUserUI();
         hideAuthModal();
-        initApp();
     } else {
+        // Show auth modal for first time visitors
         showAuthModal();
     }
+    // Always initialize Kakao Map & restaurant list for instant live preview!
+    initApp();
 });
