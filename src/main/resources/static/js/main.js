@@ -231,24 +231,34 @@ function handleLogout() {
     });
 }
 
+function debounce(func, wait = 300) {
+    let timeout;
+    return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
 // ════════════════════════════════
 // APP INITIALIZATION
 // ════════════════════════════════
 
 function initApp() {
-    if (typeof kakao === 'undefined') {
+    if (typeof kakao === 'undefined' || !kakao.maps) {
         showToast('카카오맵 API를 불러올 수 없습니다. 페이지를 새로고침해주세요.', 'error');
         return;
     }
 
-    try {
-        mapManager = new KakaoMapManager();
-        restaurantUI = new RestaurantUI();
-        console.log('✅ MOTMAP initialized successfully');
-    } catch (error) {
-        console.error('Init error:', error);
-        showToast('애플리케이션 초기화 중 오류가 발생했습니다', 'error');
-    }
+    kakao.maps.load(() => {
+        try {
+            mapManager = new KakaoMapManager();
+            restaurantUI = new RestaurantUI();
+            console.log('✅ MOTMAP initialized successfully (Kakao Maps Async)');
+        } catch (error) {
+            console.error('Init error:', error);
+            showToast('애플리케이션 초기화 중 오류가 발생했습니다', 'error');
+        }
+    });
 }
 
 // ════════════════════════════════

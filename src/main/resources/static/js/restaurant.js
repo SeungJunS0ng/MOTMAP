@@ -24,10 +24,14 @@ class RestaurantUI {
 
     initEventListeners() {
         // Search
+        const debouncedSearch = typeof debounce === 'function' ? debounce(() => this.handleSearch(), 350) : null;
         document.getElementById('searchBtn').addEventListener('click', () => this.handleSearch());
         document.getElementById('searchInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.handleSearch();
         });
+        if (debouncedSearch) {
+            document.getElementById('searchInput').addEventListener('input', debouncedSearch);
+        }
 
         // Address search button in form
         const addressSearchBtn = document.getElementById('addressSearchBtn');
